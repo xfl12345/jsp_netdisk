@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="jsp_netdisk [main_test.main()]" type="GradleRunConfiguration" factoryName="Gradle" show_console_on_std_err="true" show_console_on_std_out="true">
+    <ExternalSystemSettings>
+      <option name="executionName" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$" />
+      <option name="externalSystemIdString" value="GRADLE" />
+      <option name="scriptParameters" value="" />
+      <option name="taskDescriptions">
+        <list />
+      </option>
+      <option name="taskNames">
+        <list>
+          <option value="main_test.main()" />
+        </list>
+      </option>
+      <option name="vmOptions" value="-Dfile.encoding=UTF-8 -Xlint:all" />
+    </ExternalSystemSettings>
+    <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+    <DebugAllEnabled>false</DebugAllEnabled>
+    <method v="2" />
+  </configuration>
+</component>

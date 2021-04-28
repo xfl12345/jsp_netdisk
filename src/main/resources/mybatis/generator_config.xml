@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <!-- <classPathEntry location="/ProgramFiles/IBM/SQLLIB/java/db2java.zip" /> maven的pom中有mysql驱动jar了 -->
+    <context id="mysql" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <property name="suppressDate" value="true"/> <!--数据库注释-->
+            <property name="suppressAllComments" value="false"/>
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+        <!--数据库连接信息-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/jsp_netdisk"
+                        userId="jsp_netdisk"
+                        password="change_me_pw"></jdbcConnection>
+        <javaTypeResolver>
+            <!--官方解释:默认的Java Type Resolver尝试通过替换Integral类型（Long，Integer，Short等）.-->
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!--实体生成路径和Package路径-->
+        <javaModelGenerator targetPackage="pers.xfl.jsp_netdisk.model.pojo"
+                            targetProject="src/main/java/pers/xfl/jsp_netdisk/model/developHelper/tmp_output">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        <!--mapper生成路径和Package路径-->
+        <sqlMapGenerator targetPackage="pers.xfl.jsp_netdisk.model.dao.mappers"
+                         targetProject="src/main/java/pers/xfl/jsp_netdisk/model/developHelper/tmp_output">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+        <!--接口成路径和Package路径-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="pers.xfl.jsp_netdisk.model.dao.mappers"
+                             targetProject="src/main/java/pers/xfl/jsp_netdisk/model/developHelper/tmp_output">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        <!--表映射-->
+        <table tableName="test" domainObjectName="Test" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+    </context>
+</generatorConfiguration>

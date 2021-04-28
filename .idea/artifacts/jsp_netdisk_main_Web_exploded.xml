@@ -1,0 +1,106 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="jsp_netdisk.main:Web exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/jsp_netdisk_main_Web_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="jsp_netdisk.main/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="jsp_netdisk.main" />
+          <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources" />
+          <element id="module-output" name="jsp_netdisk" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Gradle: com.alibaba:fastjson:1.2.73" />
+          <element id="library" level="project" name="Gradle: com.fasterxml.uuid:java-uuid-generator:4.0.1" />
+          <element id="library" level="project" name="Gradle: com.fasterxml.woodstox:woodstox-core:5.2.1" />
+          <element id="library" level="project" name="Gradle: com.github.virtuald:curvesapi:1.06" />
+          <element id="library" level="project" name="Gradle: com.google.code.gson:gson:2.8.6" />
+          <element id="library" level="project" name="Gradle: com.zaxxer:SparseBitSet:1.2" />
+          <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.15" />
+          <element id="library" level="project" name="Gradle: commons-io:commons-io:1.3.1" />
+          <element id="library" level="project" name="Gradle: de.rototor.pdfbox:graphics2d:0.30" />
+          <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:4.0.1" />
+          <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.49" />
+          <element id="library" level="project" name="Gradle: org.apache.ant:ant-launcher:1.10.9" />
+          <element id="library" level="project" name="Gradle: org.apache.ant:ant:1.10.9" />
+          <element id="library" level="project" name="Gradle: org.apache.commons:commons-collections4:4.4" />
+          <element id="library" level="project" name="Gradle: org.apache.commons:commons-compress:1.20" />
+          <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.11" />
+          <element id="library" level="project" name="Gradle: org.apache.commons:commons-math3:3.6.1" />
+          <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-api:2.14.0" />
+          <element id="library" level="project" name="Gradle: org.apache.pdfbox:fontbox:2.0.22" />
+          <element id="library" level="project" name="Gradle: org.apache.pdfbox:pdfbox:2.0.22" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-all:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-anim:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-awt-util:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-bridge:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-codec:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-constants:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-css:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-dom:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-ext:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-extension:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-gui-util:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-gvt:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-i18n:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-parser:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-rasterizer-ext:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-rasterizer:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-script:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-shared-resources:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-slideshow:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-squiggle-ext:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-squiggle:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svg-dom:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svgbrowser:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svggen:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svgpp:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svgrasterizer:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-swing:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-transcoder:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-ttf2svg:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-util:1.13" />
+          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-xml:1.13" />
+          <element id="library" level="project" name="Gradle: org.bouncycastle:bcpkix-jdk15on:1.68" />
+          <element id="library" level="project" name="Gradle: org.bouncycastle:bcprov-jdk15on:1.68" />
+          <element id="library" level="project" name="Gradle: org.codehaus.woodstox:stax2-api:4.2" />
+          <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
+          <element id="library" level="project" name="Gradle: org.mybatis.generator:mybatis-generator-core:1.4.0" />
+          <element id="library" level="project" name="Gradle: org.mybatis:mybatis-spring:2.0.6" />
+          <element id="library" level="project" name="Gradle: org.mybatis:mybatis:3.5.5" />
+          <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.30" />
+          <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:2.0.0-alpha1" />
+          <element id="library" level="project" name="Gradle: org.slf4j:slf4j-nop:2.0.0-alpha1" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-aop:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-beans:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-context:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-core:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-expression:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-jcl:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-jdbc:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-tx:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-web:5.3.4" />
+          <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:5.3.4" />
+          <element id="library" level="project" name="Gradle: xalan:serializer:2.7.2" />
+          <element id="library" level="project" name="Gradle: xalan:xalan:2.7.2" />
+          <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.12.3" />
+          <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.12.3" />
+          <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.12.3" />
+          <element id="library" level="project" name="Gradle: com.j2html:j2html:1.4.0" />
+          <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.12" />
+          <element id="library" level="project" name="Gradle: javax.xml.stream:stax-api:1.0-2" />
+          <element id="library" level="project" name="Gradle: jaxen:jaxen:1.1.6" />
+          <element id="library" level="project" name="Gradle: junit:junit:4.13.1" />
+          <element id="library" level="project" name="Gradle: net.java.dev.msv:xsdlib:2013.6.1" />
+          <element id="library" level="project" name="Gradle: org.dom4j:dom4j:2.1.3" />
+          <element id="library" level="project" name="Gradle: org.jsoup:jsoup:1.13.1" />
+          <element id="library" level="project" name="Gradle: relaxngDatatype:relaxngDatatype:20020414" />
+          <element id="library" level="project" name="Gradle: xpp3:xpp3:1.1.4c" />
+          <element id="library" level="project" name="Gradle: javax.mail:javax.mail-api:1.6.2" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="jsp_netdisk.main/web/Web" />
+      <element id="javaee-facet-resources" facet="jsp_netdisk/web/Web" />
+    </root>
+  </artifact>
+</component>

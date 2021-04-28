@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.xfl.jsp_netdisk.model.dao.TbAccountDao">
+
+    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.TbAccount" id="TbAccountMap">
+        <result property="accountId" column="account_id" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="passwordHash" column="password_hash" jdbcType="VARCHAR"/>
+        <result property="passwordSalt" column="password_salt" jdbcType="VARCHAR"/>
+        <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
+        <result property="registerTime" column="register_time" jdbcType="VARCHAR"/>
+        <result property="registerTimeInMs" column="register_time_in_ms" jdbcType="INTEGER"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="VARCHAR"/>
+        <result property="accountStatus" column="account_status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbAccountMap">
+        select account_id,
+               username,
+               password_hash,
+               password_salt,
+               permission_id,
+               register_time,
+               register_time_in_ms,
+               email,
+               gender,
+               account_status
+        from jsp_netdisk.tb_account
+        where account_id = #{accountId}
+    </select>
+
+    <select id="queryByUsername" resultMap="TbAccountMap">
+        select account_id,
+               username,
+               password_hash,
+               password_salt,
+               permission_id,
+               register_time,
+               register_time_in_ms,
+               email,
+               gender,
+               account_status
+        from jsp_netdisk.tb_account
+        where username = #{username}
+    </select>
+
+    <select id="queryByEmail" resultMap="TbAccountMap">
+        select account_id,
+               username,
+               password_hash,
+               password_salt,
+               permission_id,
+               register_time,
+               register_time_in_ms,
+               email,
+               gender,
+               account_status
+        from jsp_netdisk.tb_account
+        where email = #{email}
+    </select>
+
+    <select id="userQueryByUsername" resultMap="TbAccountMap">
+        select account_id,
+               username,
+               permission_id,
+               register_time,
+               register_time_in_ms,
+               email,
+               gender,
+               account_status
+        from jsp_netdisk.tb_account
+        where username = #{username}
+    </select>
+
+    <select id="userQueryByEmail" resultMap="TbAccountMap">
+        select account_id,
+               username,
+               permission_id,
+               register_time,
+               register_time_in_ms,
+               email,
+               gender,
+               account_status
+        from jsp_netdisk.tb_account
+        where email = #{email}
+    </select>
+
+    <select id="queryValidationInformationByUsername" resultMap="TbAccountMap">
+        select account_id,
+               username,
+               password_hash,
+               password_salt,
+               account_status
+        from jsp_netdisk.tb_account
+        where username = #{username}
+    </select>
+
+
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbAccountMap">
+        select account_id,
+               username,
+               password_hash,
+               password_salt,
+               permission_id,
+               register_time,
+               register_time_in_ms,
+               email,
+               gender,
+               account_status
+        from jsp_netdisk.tb_account
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbAccountMap">
+        select
+        account_id, username, password_hash, password_salt, permission_id, register_time, register_time_in_ms,
+        email, gender, account_status
+        from jsp_netdisk.tb_account
+        <where>
+            <if test="accountId != null">
+                and account_id = #{accountId}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="passwordHash != null and passwordHash != ''">
+                and password_hash = #{passwordHash}
+            </if>
+            <if test="passwordSalt != null and passwordSalt != ''">
+                and password_salt = #{passwordSalt}
+            </if>
+            <if test="permissionId != null">
+                and permission_id = #{permissionId}
+            </if>
+            <if test="registerTime != null">
+                and register_time = #{registerTime}
+            </if>
+            <if test="registerTimeInMs != null">
+                and register_time_in_ms = #{registerTimeInMs}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="gender != null and gender != ''">
+                and gender = #{gender}
+            </if>
+            <if test="accountStatus != null">
+                and account_status = #{accountStatus}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="accountId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_account(username, password_hash, password_salt, permission_id, register_time,
+                                           register_time_in_ms, email, gender, account_status)
+        values (#{username}, #{passwordHash}, #{passwordSalt}, #{permissionId}, #{registerTime}, #{registerTimeInMs},
+                #{email}, #{gender}, #{accountStatus})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="accountId" useGeneratedKeys="true" >
+        insert into jsp_netdisk.tb_account(username, password_hash, password_salt, permission_id, register_time,
+        register_time_in_ms, email, gender, account_status)
+        values
+        <foreach collection="entities" item="entity"  separator="," >
+            (#{entity.username}, #{entity.passwordHash}, #{entity.passwordSalt}, #{entity.permissionId},
+            #{entity.registerTime}, #{entity.registerTimeInMs}, #{entity.email}, #{entity.gender},
+            #{entity.accountStatus})
+        </foreach>
+    </insert>
+
+<!--    <insert id="insertOrUpdateBatch" keyProperty="accountId" useGeneratedKeys="true">-->
+<!--        insert into jsp_netdisk.tb_account(username, password_hash, password_salt, permission_id, register_time,-->
+<!--        register_time_in_ms, email, gender, account_status)-->
+<!--        values-->
+<!--        <foreach collection="entities" item="entity" separator=",">-->
+<!--            (#{entity.username}, #{entity.passwordHash}, #{entity.passwordSalt}, #{entity.permissionId},-->
+<!--            #{entity.registerTime}, #{entity.registerTimeInMs}, #{entity.email}, #{entity.gender},-->
+<!--            #{entity.accountStatus})-->
+<!--        </foreach>-->
+<!--        on duplicate key update-->
+<!--        username = values(username) , password_hash = values(password_hash) , password_salt =-->
+<!--        values(password_salt) , permission_id = values(permission_id) , register_time = values(register_time) ,-->
+<!--        register_time_in_ms = values(register_time_in_ms) , email = values(email) , gender = values(gender) ,-->
+<!--        account_status = values(account_status)-->
+<!--    </insert>-->
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update jsp_netdisk.tb_account
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="passwordHash != null and passwordHash != ''">
+                password_hash = #{passwordHash},
+            </if>
+            <if test="passwordSalt != null and passwordSalt != ''">
+                password_salt = #{passwordSalt},
+            </if>
+            <if test="permissionId != null">
+                permission_id = #{permissionId},
+            </if>
+            <if test="registerTime != null">
+                register_time = #{registerTime},
+            </if>
+            <if test="registerTimeInMs != null">
+                register_time_in_ms = #{registerTimeInMs},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender},
+            </if>
+            <if test="accountStatus != null">
+                account_status = #{accountStatus},
+            </if>
+        </set>
+        where account_id = #{accountId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from jsp_netdisk.tb_account
+        where account_id = #{accountId}
+    </delete>
+
+</mapper>
+

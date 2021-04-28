@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.xfl.jsp_netdisk.model.dao.TbPermissionDao">
+
+    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.TbPermission" id="TbPermissionMap">
+        <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
+        <result property="uploadFile" column="upload_file" jdbcType="INTEGER"/>
+        <result property="downloadFile" column="download_file" jdbcType="INTEGER"/>
+        <result property="accountOperation" column="account_operation" jdbcType="INTEGER"/>
+        <result property="accountInfoOperation" column="account_info_operation" jdbcType="INTEGER"/>
+        <result property="fileOperation" column="file_operation" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbPermissionMap">
+        select permission_id,
+               upload_file,
+               download_file,
+               account_operation,
+               account_info_operation,
+               file_operation
+        from jsp_netdisk.tb_permission
+        where permission_id = #{permissionId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbPermissionMap">
+        select permission_id,
+               upload_file,
+               download_file,
+               account_operation,
+               account_info_operation,
+               file_operation
+        from jsp_netdisk.tb_permission
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbPermissionMap">
+        select
+        permission_id, upload_file, download_file, account_operation, account_info_operation, file_operation
+        from jsp_netdisk.tb_permission
+        <where>
+            <if test="permissionId != null">
+                and permission_id = #{permissionId}
+            </if>
+            <if test="uploadFile != null">
+                and upload_file = #{uploadFile}
+            </if>
+            <if test="downloadFile != null">
+                and download_file = #{downloadFile}
+            </if>
+            <if test="accountOperation != null">
+                and account_operation = #{accountOperation}
+            </if>
+            <if test="accountInfoOperation != null">
+                and account_info_operation = #{accountInfoOperation}
+            </if>
+            <if test="fileOperation != null">
+                and file_operation = #{fileOperation}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="permissionId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_permission(upload_file, download_file, account_operation, account_info_operation,
+                                              file_operation)
+        values (#{uploadFile}, #{downloadFile}, #{accountOperation}, #{accountInfoOperation}, #{fileOperation})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="permissionId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_permission(upload_file, download_file, account_operation, account_info_operation,
+        file_operation)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.uploadFile}, #{entity.downloadFile}, #{entity.accountOperation}, #{entity.accountInfoOperation},
+            #{entity.fileOperation})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="permissionId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_permission(upload_file, download_file, account_operation, account_info_operation,
+        file_operation)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.uploadFile}, #{entity.downloadFile}, #{entity.accountOperation}, #{entity.accountInfoOperation},
+            #{entity.fileOperation})
+        </foreach>
+        on duplicate key update
+        upload_file = values(upload_file) , download_file = values(download_file) , account_operation =
+        values(account_operation) , account_info_operation = values(account_info_operation) , file_operation =
+        values(file_operation)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update jsp_netdisk.tb_permission
+        <set>
+            <if test="uploadFile != null">
+                upload_file = #{uploadFile},
+            </if>
+            <if test="downloadFile != null">
+                download_file = #{downloadFile},
+            </if>
+            <if test="accountOperation != null">
+                account_operation = #{accountOperation},
+            </if>
+            <if test="accountInfoOperation != null">
+                account_info_operation = #{accountInfoOperation},
+            </if>
+            <if test="fileOperation != null">
+                file_operation = #{fileOperation},
+            </if>
+        </set>
+        where permission_id = #{permissionId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from jsp_netdisk.tb_permission
+        where permission_id = #{permissionId}
+    </delete>
+
+</mapper>
+

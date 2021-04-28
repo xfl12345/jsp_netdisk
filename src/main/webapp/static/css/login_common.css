@@ -1,0 +1,118 @@
+
+
+.makeDivCenterParent {
+    height: 800px;
+    width: 500px;
+    position: absolute;
+    left: 50%;
+}
+
+.makeDivCenterParent > div {
+    position: relative;
+    left: -50%;
+    top: 200px;
+}
+
+.divForm {
+    position: relative;
+    width: 80%;
+    left: 10%;
+    text-align: center;
+}
+
+.mySubmitBtn {
+    border-style: solid;
+    background-color: transparent;
+    color: #00B0FF;
+}
+
+.mySubmitBtn:hover {
+    border-style: outset;
+    background-color: #00B0FF;
+    color: white;
+}
+
+.mySubmitBtn, .mySubmitBtn:hover {
+    font-family: '楷体';
+    font-size: 2em;
+    width: 80%;
+    height: auto;
+    border-color: #00B0FF;
+    border-radius: 25px;
+    box-shadow: none;
+}
+
+.inputTableLeft, .inputTableRight {
+    border: 1px solid #00B0FF;
+}
+
+.inputTableLeft {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    background-color: #00B0FF;
+    width: 30%;
+    color: white;
+    font-family: '楷体';
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.inputTableRight {
+    /*border-bottom: none;
+    border-radius: 25px;
+    border-color: #000000;*/
+    padding: 0px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: transparent;
+    width: 70%;
+}
+
+
+.inputTableRight > input {
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    /*border-radius:6px; */
+    border: none;
+    overflow: hidden;
+    outline-color: invert;
+    outline-style: none;
+    outline-width: 0px;
+    text-shadow: none;
+    -webkit-appearance: none;
+    -webkit-user-select: text;
+    /*outline-color: transparent ;*/
+    box-shadow: none;
+    color: rgb(255, 69, 0);
+}
+
+.divFormTitle {
+    /*box-shadow: rgb(255, 255, 255) 0px 0px 10px ;*/
+    color: orangered;
+    font-size: 2em;
+    font-family: '楷体';
+}
+
+.broaderBreath{
+    animation: load 1.5s infinite alternate;
+}
+.broaderBreath:nth-child(1) {
+    animation-delay: -0.25s;
+}
+@keyframes load {
+    0% {
+        box-shadow:  0px 0px 10px 3px rgba(255, 105, 180,0.5);
+    }
+    100% {
+        box-shadow:  0px 0px 40px 3px rgba(255, 105, 180, 1);
+    }
+}
+
+.simpleMakeDivCenter {
+    margin: 0 auto;
+    /*align-self: center;*/
+}
+.jsInsert {
+    color: orangered;
+}

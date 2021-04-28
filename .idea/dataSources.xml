@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="MySQL for 5.1 - jsp_netdisk@localhost" uuid="5c2978e3-6e0c-4250-a2c0-8a52da003674">
+      <driver-ref>mysql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/jsp_netdisk</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+      <driver-properties>
+        <property name="serverTimezone" value="Asia/Shanghai" />
+      </driver-properties>
+    </data-source>
+  </component>
+</project>

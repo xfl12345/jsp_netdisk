@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:mvc="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xsi:schemaLocation="
+                http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/mvc
+                http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--    &lt;!&ndash; 自动扫描包下的所有类&ndash;&gt;-->
+    <!--    <context:component-scan base-package="pers.xfl.jsp_netdisk" use-default-filters="false">-->
+    <!--        <context:include-filter type="annotation"-->
+    <!--                                expression="org.springframework.stereotype.Controller"/>-->
+    <!--        <context:include-filter type="annotation"-->
+    <!--                                expression="org.springframework.web.bind.annotation.ControllerAdvice"/>-->
+    <!--    </context:component-scan>-->
+
+    <!-- 自动扫描controller包下的所有类-->
+    <context:component-scan base-package="pers.xfl.jsp_netdisk.controller" />
+
+    <!--视图解析器-->
+    <beans:bean id="resourceViewResolver"  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <beans:property name="prefix" value="/WEB-INF/views/"/>
+        <beans:property name="suffix" value=".jsp"/>
+        <!--        <beans:property name="order" value="0"/>-->
+    </beans:bean>
+    <mvc:default-servlet-handler/>
+    <!-- 静态文件-->
+    <mvc:resources mapping="/static/**" location="/static/"/>
+    <mvc:resources mapping="/html/**" location="/html/"/>
+    <!--    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />-->
+    <!--    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />-->
+
+    <!--注解驱动，以使得访问路径与方法的匹配可以通过注解配置-->
+    <!-- json 配置-->
+    <mvc:annotation-driven >
+        <mvc:message-converters>
+            <beans:bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+                <beans:property name="supportedMediaTypes">
+                    <beans:list>
+                        <beans:value>text/html;charset=UTF-8</beans:value>
+                        <beans:value>application/json;charset=UTF-8</beans:value>
+                    </beans:list>
+                </beans:property>
+            </beans:bean>
+            <beans:bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <beans:property name="supportedMediaTypes">
+                    <beans:list>
+                        <beans:value>text/html;charset=UTF-8</beans:value>
+                        <beans:value>application/json;charset=UTF-8</beans:value>
+                    </beans:list>
+                </beans:property>
+            </beans:bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--    <bean id="/login" name="login" class="pers.xfl.jsp_netdisk.controller.LoginController" />-->
+
+
+    <!--上传文件配置-->
+    <!--    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+    <!--        <beans:property name="maxUploadSize" value="1024000000"/>-->
+    <!--    </beans:bean>-->
+
+    <!--其他 拦截器配置等-->
+
+</beans:beans>

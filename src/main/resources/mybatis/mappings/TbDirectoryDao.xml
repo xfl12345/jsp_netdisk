@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.xfl.jsp_netdisk.model.dao.TbDirectoryDao">
+
+    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.TbDirectory" id="TbDirectoryMap">
+        <result property="directoryId" column="directory_id" jdbcType="INTEGER"/>
+        <result property="parentDirectoryId" column="parent_directory_id" jdbcType="INTEGER"/>
+        <result property="accountId" column="account_id" jdbcType="INTEGER"/>
+        <result property="directoryName" column="directory_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbDirectoryMap">
+        select directory_id,
+               parent_directory_id,
+               account_id,
+               directory_name
+        from jsp_netdisk.tb_directory
+        where directory_id = #{directoryId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbDirectoryMap">
+        select directory_id,
+               parent_directory_id,
+               account_id,
+               directory_name
+        from jsp_netdisk.tb_directory
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbDirectoryMap">
+        select
+        directory_id, parent_directory_id, account_id, directory_name
+        from jsp_netdisk.tb_directory
+        <where>
+            <if test="directoryId != null">
+                and directory_id = #{directoryId}
+            </if>
+            <if test="parentDirectoryId != null">
+                and parent_directory_id = #{parentDirectoryId}
+            </if>
+            <if test="accountId != null">
+                and account_id = #{accountId}
+            </if>
+            <if test="directoryName != null and directoryName != ''">
+                and directory_name = #{directoryName}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="directoryId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_directory(parent_directory_id, account_id, directory_name)
+        values (#{parentDirectoryId}, #{accountId}, #{directoryName})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="directoryId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_directory(parent_directory_id, account_id, directory_name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.parentDirectoryId}, #{entity.accountId}, #{entity.directoryName})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="directoryId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_directory(parent_directory_id, account_id, directory_name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.parentDirectoryId}, #{entity.accountId}, #{entity.directoryName})
+        </foreach>
+        on duplicate key update
+        parent_directory_id = values(parent_directory_id) , account_id = values(account_id) , directory_name =
+        values(directory_name)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update jsp_netdisk.tb_directory
+        <set>
+            <if test="parentDirectoryId != null">
+                parent_directory_id = #{parentDirectoryId},
+            </if>
+            <if test="accountId != null">
+                account_id = #{accountId},
+            </if>
+            <if test="directoryName != null and directoryName != ''">
+                directory_name = #{directoryName},
+            </if>
+        </set>
+        where directory_id = #{directoryId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from jsp_netdisk.tb_directory
+        where directory_id = #{directoryId}
+    </delete>
+
+</mapper>
+

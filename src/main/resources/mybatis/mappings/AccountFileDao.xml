@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.xfl.jsp_netdisk.model.dao.AccountFileDao">
+
+    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.AccountFile" id="AccountFileMap">
+        <result property="accountId" column="account_id" jdbcType="INTEGER"/>
+        <result property="fileId" column="file_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询账号下所有文件-->
+    <select id="queryAllByAccountId" resultMap="AccountFileMap">
+        select account_id,
+               file_id
+        from jsp_netdisk.account_file
+        where account_id = #{id}
+    </select>
+
+    <!--查询账号下所有文件里指定范围内的文件-->
+    <select id="queryAllByAccountIdWithLimit" resultMap="AccountFileMap">
+        select account_id,
+               file_id
+        from jsp_netdisk.account_file
+        where account_id = #{id}
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="AccountFileMap">
+        select
+        account_id, file_id
+        from jsp_netdisk.account_file
+        <where>
+            <if test="accountId != null">
+                and account_id = #{accountId}
+            </if>
+            <if test="fileId != null">
+                and file_id = #{fileId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into jsp_netdisk.account_file(account_id, file_id)
+        values (#{accountId}, #{fileId})
+    </insert>
+
+    <insert id="insertBatch">
+        insert into jsp_netdisk.account_file(account_id, file_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.accountId}, #{entity.fileId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        insert into jsp_netdisk.account_file(account_id, file_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.accountId}, #{entity.fileId})
+        </foreach>
+        on duplicate key update
+        account_id = values(account_id) , file_id = values(file_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update jsp_netdisk.account_file
+        <set>
+            <if test="accountId != null">
+                account_id = #{accountId},
+            </if>
+            <if test="fileId != null">
+                file_id = #{fileId},
+            </if>
+        </set>
+        where account_id = #{id} and file_id = #{fileId}
+    </update>
+
+    <!--通过主键删除-->
+<!--    <delete id="deleteById">-->
+<!--        delete-->
+<!--        from jsp_netdisk.account_file-->
+<!--        where = #{}-->
+<!--    </delete>-->
+
+</mapper>
+

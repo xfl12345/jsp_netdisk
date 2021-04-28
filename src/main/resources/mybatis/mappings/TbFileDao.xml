@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.xfl.jsp_netdisk.model.dao.TbFileDao">
+
+    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.TbFile" id="TbFileMap">
+        <result property="fileId" column="file_id" jdbcType="INTEGER"/>
+        <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+        <result property="fileSize" column="file_size" jdbcType="INTEGER"/>
+        <result property="fileType" column="file_type" jdbcType="INTEGER"/>
+        <result property="fileStatus" column="file_status" jdbcType="INTEGER"/>
+        <result property="fileUploadTime" column="file_upload_time" jdbcType="TIMESTAMP"/>
+        <result property="fileHashMd5" column="file_hash_md5" jdbcType="VARCHAR"/>
+        <result property="fileHashSha256" column="file_hash_sha256" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbFileMap">
+        select file_id,
+               file_name,
+               file_size,
+               file_type,
+               file_status,
+               file_upload_time,
+               file_hash_md5,
+               file_hash_sha256
+        from jsp_netdisk.tb_file
+        where file_id = #{fileId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbFileMap">
+        select file_id,
+               file_name,
+               file_size,
+               file_type,
+               file_status,
+               file_upload_time,
+               file_hash_md5,
+               file_hash_sha256
+        from jsp_netdisk.tb_file
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbFileMap">
+        select
+        file_id, file_name, file_size, file_type, file_status, file_upload_time, file_hash_md5, file_hash_sha256
+        from jsp_netdisk.tb_file
+        <where>
+            <if test="fileId != null">
+                and file_id = #{fileId}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and file_name = #{fileName}
+            </if>
+            <if test="fileSize != null">
+                and file_size = #{fileSize}
+            </if>
+            <if test="fileType != null">
+                and file_type = #{fileType}
+            </if>
+            <if test="fileStatus != null">
+                and file_status = #{fileStatus}
+            </if>
+            <if test="fileUploadTime != null">
+                and file_upload_time = #{fileUploadTime}
+            </if>
+            <if test="fileHashMd5 != null and fileHashMd5 != ''">
+                and file_hash_md5 = #{fileHashMd5}
+            </if>
+            <if test="fileHashSha256 != null and fileHashSha256 != ''">
+                and file_hash_sha256 = #{fileHashSha256}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="fileId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_file(file_name, file_size, file_type, file_status, file_upload_time, file_hash_md5,
+                                        file_hash_sha256)
+        values (#{fileName}, #{fileSize}, #{fileType}, #{fileStatus}, #{fileUploadTime}, #{fileHashMd5},
+                #{fileHashSha256})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="fileId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_file(file_name, file_size, file_type, file_status, file_upload_time, file_hash_md5,
+        file_hash_sha256)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.fileName}, #{entity.fileSize}, #{entity.fileType}, #{entity.fileStatus}, #{entity.fileUploadTime},
+            #{entity.fileHashMd5}, #{entity.fileHashSha256})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="fileId" useGeneratedKeys="true">
+        insert into jsp_netdisk.tb_file(file_name, file_size, file_type, file_status, file_upload_time, file_hash_md5,
+        file_hash_sha256)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.fileName}, #{entity.fileSize}, #{entity.fileType}, #{entity.fileStatus}, #{entity.fileUploadTime},
+            #{entity.fileHashMd5}, #{entity.fileHashSha256})
+        </foreach>
+        on duplicate key update
+        file_name = values(file_name) , file_size = values(file_size) , file_type = values(file_type) , file_status =
+        values(file_status) , file_upload_time = values(file_upload_time) , file_hash_md5 = values(file_hash_md5) ,
+        file_hash_sha256 = values(file_hash_sha256)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update jsp_netdisk.tb_file
+        <set>
+            <if test="fileName != null and fileName != ''">
+                file_name = #{fileName},
+            </if>
+            <if test="fileSize != null">
+                file_size = #{fileSize},
+            </if>
+            <if test="fileType != null">
+                file_type = #{fileType},
+            </if>
+            <if test="fileStatus != null">
+                file_status = #{fileStatus},
+            </if>
+            <if test="fileUploadTime != null">
+                file_upload_time = #{fileUploadTime},
+            </if>
+            <if test="fileHashMd5 != null and fileHashMd5 != ''">
+                file_hash_md5 = #{fileHashMd5},
+            </if>
+            <if test="fileHashSha256 != null and fileHashSha256 != ''">
+                file_hash_sha256 = #{fileHashSha256},
+            </if>
+        </set>
+        where file_id = #{fileId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from jsp_netdisk.tb_file
+        where file_id = #{fileId}
+    </delete>
+
+</mapper>
+

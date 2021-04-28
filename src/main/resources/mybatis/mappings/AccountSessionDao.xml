@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.xfl.jsp_netdisk.model.dao.AccountSessionDao">
+
+    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.AccountSession" id="AccountSessionMap">
+        <result property="accountId" column="account_id" jdbcType="INTEGER"/>
+        <result property="sessionId" column="session_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryByAccountId" resultMap="AccountSessionMap">
+        select *
+        from jsp_netdisk.account_session
+        where account_id = #{accountId}
+    </select>
+
+    <select id="queryBySessionId" resultMap="AccountSessionMap">
+        select *
+        from jsp_netdisk.account_session
+        where session_id = #{sessionId}
+    </select>
+
+    <select id="queryByAccountIdAndSessionId" resultMap="AccountSessionMap">
+        select *
+        from jsp_netdisk.account_session
+        where account_id = #{accountId} and session_id = #{sessionId}
+    </select>
+
+    <!--计数-->
+<!--    <select id="countByAccountId">-->
+<!--        select count(*) as c-->
+<!--        from jsp_netdisk.account_session-->
+<!--        where account_id = #{accountId}-->
+<!--    </select>-->
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="AccountSessionMap">
+        select *
+        from jsp_netdisk.account_session
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--新增一行-->
+    <insert id="insert" >
+        insert into jsp_netdisk.account_session(account_id, session_id)
+        values (#{accountId}, #{sessionId})
+    </insert>
+
+
+    <!--通过账号ID修改数据-->
+    <update id="updateByAccountId">
+        update jsp_netdisk.tb_account
+        <set>
+            <if test="sessionId != null and sessionId != ''">
+                session_id = #{sessionId},
+            </if>
+        </set>
+        where account_id = #{accountId}
+    </update>
+
+    <!--按账号ID删除-->
+    <delete id="deleteByAccountId">
+        delete
+        from jsp_netdisk.account_session
+        where account_id = #{accountId}
+    </delete>
+
+    <!--按会话ID删除-->
+    <delete id="deleteBySessionId">
+        delete
+        from jsp_netdisk.account_session
+        where session_id = #{sessionId}
+    </delete>
+
+</mapper>
+

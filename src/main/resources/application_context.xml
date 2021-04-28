@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--    <context:component-scan base-package="pers.xfl.jsp_netdisk" />-->
+    <!-- 开启注解驱动 -->
+    <context:annotation-config/>
+    <!-- 自动扫描service包下的所有类-->
+    <context:component-scan base-package="pers.xfl.jsp_netdisk.model.service"/>
+    <!-- 自动扫描listener包下的所有类-->
+    <context:component-scan base-package="pers.xfl.jsp_netdisk.model.listener"/>
+
+    <!-- 无限套娃 之 加载所有配置文件的相对路径 -->
+    <context:property-placeholder ignore-unresolvable="false" location="classpath:all_properties_path.properties"/>
+    <!-- 无限套娃 之 加载Spring工具类 -->
+    <bean id="staticSpringApp" class="pers.xfl.jsp_netdisk.StaticSpringApp" lazy-init="false" />
+    <!-- 监听 Spring Context 实例化事件，这是个工具类 -->
+    <bean id="mySpringApplicationStartListener" class="pers.xfl.jsp_netdisk.model.listener.MySpringApplicationStartListener" lazy-init="false"/>
+    <!--解决JDBC驱动卸载问题-->
+    <bean id="contextFinalizer" class="pers.xfl.jsp_netdisk.model.utils.jdbc.ContextFinalizer" lazy-init="true" />
+    <!--监听session触发事件，实现超时自动注销登录 -->
+    <bean id="mySessionEventListener" class="pers.xfl.jsp_netdisk.model.listener.MySessionEventListener" lazy-init="true" />
+    <!-- webapp自己的版本信息 -->
+    <bean id="appInfo" class="pers.xfl.jsp_netdisk.model.appconst.AppInfo" lazy-init="true"/>
+    <!-- UUID生成器 -->
+    <bean id="uuidGenerator" class="com.fasterxml.uuid.Generators"/>
+    <!-- 需调用函数才能预加载、完成初始化任务的，都写在里面 -->
+    <bean id="preloadSingleton" class="pers.xfl.jsp_netdisk.model.PreLoad" lazy-init="false"/>
+    <!-- 通过继承PooledDataSource类，对父类进行增强，实现了全自动初始化数据库 -->
+    <bean id="dataSource" class="pers.xfl.jsp_netdisk.model.utils.jdbc.MyDataSource" scope="singleton" lazy-init="false">
+        <constructor-arg index="0" value="${db_init_sql_file_relative_path}" />
+        <constructor-arg index="1" value="${db_restart_init_sql_file_relative_path}" />
+        <constructor-arg index="2" value="${db_url_base_parameter_file_relative_path}" />
+        <constructor-arg index="3" value="${db_url_additional_parameter_file_relative_path}" />
+    </bean>
+
+    <!--MyBatis SQLSessionFactory -->
+    <!-- spring和MyBatis完美整合 -->
+    <!-- source code URL=https://blog.csdn.net/qq_33840251/article/details/89814071 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 指定数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 具体指定xml文件，可不配 -->
+        <!-- <property name="configLocation" value="classpath:mybatis/empty_mybatis_conf.xml"/> -->
+        <!-- 自动扫描mapping.xml文件，**表示迭代查找 ,,也可在mybatis-config.xml中单独指定xml文件 -->
+        <!-- 配置单个xml文件 -->
+        <!--<property name="mapperLocations" value="classpath:com/yaosiyuan/dao/xml/MsMerchantMapper.xml"/> -->
+        <!-- 配置多个xml文件 -->
+        <property name="mapperLocations">
+            <list>
+                <value>classpath:mybatis/mappings/**.xml</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+    <!--事务配置-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!-- Mybatis MapperScannerConfigurer 自动扫描 将Mapper接口生成代理注入到Spring -->
+    <bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="pers.xfl.jsp_netdisk.model.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+    <!--        <bean id="MybatisMapperDynamicLoader" class="pers.xfl.jsp_netdisk.model.developerhelper.MybatisMapperDynamicLoader" />-->
+    <!--        <bean id="MyConst" class="pers.xfl.jsp_netdisk.model.appconst.MyConst" scope="singleton" />-->
+    <!--        <bean id="/login" name="login" class="pers.xfl.jsp_netdisk.controller.LoginController" />-->
+
+</beans>
