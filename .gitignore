@@ -1,0 +1,11 @@
+/.gradle/
+/build/
+/src/main/tmpBin/
+/src/main/java/pers/xfl/jsp_netdisk/model/developerhelper/tmp_output/
+/out/
+/uuid1.lck
+/uuid2.lck
+/src/main/resources/email.no_upload.properties
+/src/main/java/pers/xfl/jsp_netdisk/controller/controller.zip
+/src/main/java/pers/xfl/jsp_netdisk/model/dao/dao.zip
+/src/main/java/pers/xfl/jsp_netdisk/model/service/impl/impl.zip
