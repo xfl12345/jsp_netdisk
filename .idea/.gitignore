@@ -4,5 +4,7 @@
 # Datasource local storage ignored files
 /../../../../../../:\Data\project\tmp\jsp_netdisk\.idea/dataSources/
 /dataSources.local.xml
+/dataSources/
+/EasyCodeConfig/
 # Editor-based HTTP Client requests
 /httpRequests/
