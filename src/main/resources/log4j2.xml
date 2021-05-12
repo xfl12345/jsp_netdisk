@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- source code URL= https://blog.csdn.net/zeal9s/article/details/86078097 -->
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
+<!-- monitorInterval:指定log4j自动重新配置的监测间隔时间 -->
+<configuration status="INFO" monitorInterval="1">
+    <!-- 变量配置 应该是日志文件保存路径-->
+    <Properties>
+        <!-- （*必须,各应用需要修改） 部署应用的名称,命名规则 :全部小写字母、中短横线、数字,与微服务命名,disconf中命名一致 -->
+        <property name="APPNAME">jsp_netdisk</property>
+        <!-- （各应用需要修改）日志文件本地存放目录路径 建议各个环境跟生产环境统一起来,方便维护 -->
+        <!--sys:catalina.home  tomcat的根目录-->
+        <Property name="logBaseFolder">${sys:catalina.home}/logs/jsp_netdisk/</Property>
+        <!-- *必须并强制遵守 日志文件的编码 -->
+        <property name="log_charset">UTF-8</property>
+        <!--输出日志格式-->
+        <property name="log_pattern">
+            %d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %msg%n
+        </property>
+    </Properties>
+
+    <!--先定义所有的appender-->
+    <appenders>
+        <!--这个输出控制台的配置-->
+        <console name="Console" target="SYSTEM_OUT" ignoreExceptions="false">
+            <!--输出日志的格式 %l :表示某个类-->
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%t] %-5p %c{1}:%L - %msg%n"/>
+        </console>
+
+        <!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
+        <RollingFile name="RollingFileInfo" fileName="${logBaseFolder}/${APPNAME}-info.log"
+                     filePattern="${logBaseFolder}/%d{yyyy-MM}/${APPNAME}-info-%d{dd_HH_mm_ss}.%i.log.gz">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!-- 日志输出格式 -->
+            <PatternLayout charset="${log_charset}" pattern="${log_pattern}" />
+            <!-- 以下是日志压缩包目录的建议格式名称 建议1天归档依次，压缩文件上线建议为200,这里预估每个磁盘存储空间200G左右，每个压缩包最大值200MB -->
+            <Policies>
+                <TimeBasedTriggeringPolicy  modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="RollingFileError" fileName="${logBaseFolder}/${APPNAME}-error.log"
+                     filePattern="${logBaseFolder}/%d{yyyy-MM}/${APPNAME}-error-%d{dd_HH_mm_ss}.%i.log.gz">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="${log_charset}" pattern="${log_pattern}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy  modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+        </RollingFile>
+    </appenders>
+
+    <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <loggers>
+        <!-- source code URL=https://blog.csdn.net/zwj1030711290/article/details/114133986 -->
+        <!--监控系统信息-->
+        <!--若是additivity设为false，则 子Logger 只会在自己的appender里输出，而不会在 父Logger 的appender里输出。-->
+        <!-- 过滤掉spring和mybatis的一些信息，输出到配置的一个或多个AppenderRef中-->
+        <logger name="org.springframework" level="INFO" additivity="false">
+            <appender-ref ref="Console" />
+        </logger>
+        <logger name="org.mybatis" level="INFO" additivity="false">
+            <appender-ref ref="Console" />
+        </logger>
+
+        <!-- source code URL=https://blog.csdn.net/qq_41741884/article/details/103012745  -->
+        <!--配置输出sql语句-->
+<!--        <logger name="org.apache.ibatis" level="DEBUG"/>-->
+<!--        <logger name="java.sql.Connection" level="DEBUG"/>-->
+<!--        <logger name="java.sql.Statement" level="DEBUG"/>-->
+<!--        <logger name="java.sql.PreparedStatement" level="DEBUG"/>-->
+
+        <!-- name属性可以是包名或者是具体的全限定类名 -->
+        <!-- 这里只针对MyBatis mapper xml文件里映射的dao接口做DEBUG级别日志记录，输出sql语句。如果不是DEBUG级别，将无法打印sql语句-->
+        <logger name="com.github.xfl12345.jsp_netdisk.model.dao" level="DEBUG"/>
+        <logger name="com.github.xfl12345.jsp_netdisk" level="INFO"/>
+
+        <root level="ALL">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+    </loggers>
+</configuration>
+
+
+

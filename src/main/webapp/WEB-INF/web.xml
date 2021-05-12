@@ -4,17 +4,50 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-    <display-name>SpringMVC Test</display-name>
+    <display-name>jsp_netdisk</display-name>
 
+    <!-- log4j2-begin-->
+    <context-param>
+        <param-name>log4jConfiguration</param-name>
+        <param-value>classpath:log4j2.xml</param-value>
+    </context-param>
+    <!--动态修改log4j2.xml：容器会每60秒扫描log4j的配置文件-->
+<!--    <context-param>-->
+<!--        <param-name>log4jRefreshInterval</param-name>-->
+<!--        <param-value>60000</param-value>-->
+<!--    </context-param>-->
+
+    <!--监听器和过滤器-->
+    <listener>
+        <listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>log4jServletFilter</filter-name>
+        <filter-class>org.apache.logging.log4j.web.Log4jServletFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>log4jServletFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    <!-- log4j2-end -->
+
+    <!-- Spring begin -->
+    <!-- 初始化Spring 容器作为root容器-->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath:application_context.xml</param-value>
     </context-param>
-
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+    <!-- Spring end -->
 
+    <!-- SpringMVC begin -->
     <!-- 配置springmvc DispatcherServlet  SpringMVC核心分发器-->
     <servlet>
         <servlet-name>springMVC</servlet-name>
@@ -30,7 +63,7 @@
         <servlet-name>springMVC</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-
+    <!-- SpringMVC end -->
 
     <!-- 编码过滤器 UTF-8-->
     <filter>
@@ -47,6 +80,14 @@
     </filter-mapping>
 
     <jsp-config>
+        <!-- 写这个taglib标签呢，主要是用于消灭 Tomcat 9的警告：
+            "org.apache.jasper.servlet.TldScanner.scanJars 至少有一个JAR被扫描用于TLD但尚未包含TLD。"
+            但是没有消灭成功。。。 -->
+        <taglib>
+            <!--定义此标签库的uri路径，用于唯一标识该数据库，便于页面的引用-->
+            <taglib-uri>/jstl-examples-taglib</taglib-uri>
+            <taglib-location>tld_test.tld</taglib-location>
+        </taglib>
         <jsp-property-group>
             <description>html encoding example</description>
             <display-name>JSPConfiguration</display-name>
@@ -62,8 +103,8 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    <!-- 设置session失效，单位分 -->
+    <!-- 设置session失效，时间单位：分钟 minute -->
     <session-config>
-        <session-timeout>1</session-timeout>
+        <session-timeout>30</session-timeout>
     </session-config>
 </web-app>

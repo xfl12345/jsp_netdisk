@@ -20,18 +20,18 @@
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
         <!--实体生成路径和Package路径-->
-        <javaModelGenerator targetPackage="pers.xfl.jsp_netdisk.model.pojo"
+        <javaModelGenerator targetPackage="com.github.xfl12345.jsp_netdisk.model.pojo"
                             targetProject="src/main/java/pers/xfl/jsp_netdisk/model/developHelper/tmp_output">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
         <!--mapper生成路径和Package路径-->
-        <sqlMapGenerator targetPackage="pers.xfl.jsp_netdisk.model.dao.mappers"
+        <sqlMapGenerator targetPackage="com.github.xfl12345.jsp_netdisk.model.dao.mappers"
                          targetProject="src/main/java/pers/xfl/jsp_netdisk/model/developHelper/tmp_output">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
         <!--接口成路径和Package路径-->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="pers.xfl.jsp_netdisk.model.dao.mappers"
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.github.xfl12345.jsp_netdisk.model.dao.mappers"
                              targetProject="src/main/java/pers/xfl/jsp_netdisk/model/developHelper/tmp_output">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>

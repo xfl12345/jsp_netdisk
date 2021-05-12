@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="pers.xfl.jsp_netdisk.model.dao.TbPermissionDao">
+<mapper namespace="com.github.xfl12345.jsp_netdisk.model.dao.TbPermissionDao">
 
-    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.TbPermission" id="TbPermissionMap">
+    <resultMap type="com.github.xfl12345.jsp_netdisk.model.pojo.database.TbPermission" id="TbPermissionMap">
         <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
         <result property="uploadFile" column="upload_file" jdbcType="INTEGER"/>
         <result property="downloadFile" column="download_file" jdbcType="INTEGER"/>
@@ -11,28 +11,30 @@
         <result property="fileOperation" column="file_operation" jdbcType="INTEGER"/>
     </resultMap>
 
-    <!--查询单个-->
-    <select id="queryById" resultMap="TbPermissionMap">
-        select permission_id,
-               upload_file,
-               download_file,
-               account_operation,
-               account_info_operation,
-               file_operation
+    <!--以实体为条件，做统计-->
+    <select id="countAll" resultType="java.lang.Long">
+        select count(*) as c
         from jsp_netdisk.tb_permission
-        where permission_id = #{permissionId}
-    </select>
-
-    <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="TbPermissionMap">
-        select permission_id,
-               upload_file,
-               download_file,
-               account_operation,
-               account_info_operation,
-               file_operation
-        from jsp_netdisk.tb_permission
-        limit #{offset}, #{limit}
+        <where>
+            <if test="permissionId != null">
+                and permission_id = #{permissionId}
+            </if>
+            <if test="uploadFile != null">
+                and upload_file = #{uploadFile}
+            </if>
+            <if test="downloadFile != null">
+                and download_file = #{downloadFile}
+            </if>
+            <if test="accountOperation != null">
+                and account_operation = #{accountOperation}
+            </if>
+            <if test="accountInfoOperation != null">
+                and account_info_operation = #{accountInfoOperation}
+            </if>
+            <if test="fileOperation != null">
+                and file_operation = #{fileOperation}
+            </if>
+        </where>
     </select>
 
     <!--通过实体作为筛选条件查询-->
@@ -60,6 +62,50 @@
                 and file_operation = #{fileOperation}
             </if>
         </where>
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbPermissionMap">
+        select permission_id,
+               upload_file,
+               download_file,
+               account_operation,
+               account_info_operation,
+               file_operation
+        from jsp_netdisk.tb_permission
+        where permission_id = #{permissionId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbPermissionMap">
+        select permission_id,
+               upload_file,
+               download_file,
+               account_operation,
+               account_info_operation,
+               file_operation
+        from jsp_netdisk.tb_permission
+        <where>
+            <if test="tbPermission.permissionId != null">
+                and permission_id = #{tbPermission.permissionId}
+            </if>
+            <if test="tbPermission.uploadFile != null">
+                and upload_file = #{tbPermission.uploadFile}
+            </if>
+            <if test="tbPermission.downloadFile != null">
+                and download_file = #{tbPermission.downloadFile}
+            </if>
+            <if test="tbPermission.accountOperation != null">
+                and account_operation = #{tbPermission.accountOperation}
+            </if>
+            <if test="tbPermission.accountInfoOperation != null">
+                and account_info_operation = #{tbPermission.accountInfoOperation}
+            </if>
+            <if test="tbPermission.fileOperation != null">
+                and file_operation = #{tbPermission.fileOperation}
+            </if>
+        </where>
+        limit #{offset}, #{limit}
     </select>
 
     <!--新增所有列-->

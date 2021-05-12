@@ -7,14 +7,14 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!doctype html>
-<html>
+<html lang="zh">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>${title}</title>
-    <link href="static/css/login_common.css" rel="stylesheet" type="text/css"/>
-    <link href="static/css/login_special_use.css" rel="stylesheet" type="text/css"/>
+    <link href="<%=request.getContextPath() %>/static/css/login_common.css" rel="stylesheet" type="text/css"/>
+    <link href="<%=request.getContextPath() %>/static/css/login_special_use.css" rel="stylesheet" type="text/css"/>
 </head>
-<body background="static/pic/yourname_dusk.jpg">
+<body background="<%=request.getContextPath() %>/static/pic/yourname_dusk.jpg">
 
 <div id="div1" class="makeDivCenterParent">
     <div id="div2" class="broaderBreath">

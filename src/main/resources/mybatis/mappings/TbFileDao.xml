@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="pers.xfl.jsp_netdisk.model.dao.TbFileDao">
+<mapper namespace="com.github.xfl12345.jsp_netdisk.model.dao.TbFileDao">
 
-    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.TbFile" id="TbFileMap">
+    <resultMap type="com.github.xfl12345.jsp_netdisk.model.pojo.database.TbFile" id="TbFileMap">
         <result property="fileId" column="file_id" jdbcType="INTEGER"/>
         <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
         <result property="fileSize" column="file_size" jdbcType="INTEGER"/>
@@ -13,32 +13,36 @@
         <result property="fileHashSha256" column="file_hash_sha256" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <!--查询单个-->
-    <select id="queryById" resultMap="TbFileMap">
-        select file_id,
-               file_name,
-               file_size,
-               file_type,
-               file_status,
-               file_upload_time,
-               file_hash_md5,
-               file_hash_sha256
+    <!--以实体为条件，做统计-->
+    <select id="countAll" resultType="java.lang.Long">
+        select count(*) as c
         from jsp_netdisk.tb_file
-        where file_id = #{fileId}
-    </select>
-
-    <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="TbFileMap">
-        select file_id,
-               file_name,
-               file_size,
-               file_type,
-               file_status,
-               file_upload_time,
-               file_hash_md5,
-               file_hash_sha256
-        from jsp_netdisk.tb_file
-        limit #{offset}, #{limit}
+        <where>
+            <if test="fileId != null">
+                and file_id = #{fileId}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and file_name = #{fileName}
+            </if>
+            <if test="fileSize != null">
+                and file_size = #{fileSize}
+            </if>
+            <if test="fileType != null">
+                and file_type = #{fileType}
+            </if>
+            <if test="fileStatus != null">
+                and file_status = #{fileStatus}
+            </if>
+            <if test="fileUploadTime != null">
+                and file_upload_time = #{fileUploadTime}
+            </if>
+            <if test="fileHashMd5 != null and fileHashMd5 != ''">
+                and file_hash_md5 = #{fileHashMd5}
+            </if>
+            <if test="fileHashSha256 != null and fileHashSha256 != ''">
+                and file_hash_sha256 = #{fileHashSha256}
+            </if>
+        </where>
     </select>
 
     <!--通过实体作为筛选条件查询-->
@@ -72,6 +76,60 @@
                 and file_hash_sha256 = #{fileHashSha256}
             </if>
         </where>
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbFileMap">
+        select file_id,
+               file_name,
+               file_size,
+               file_type,
+               file_status,
+               file_upload_time,
+               file_hash_md5,
+               file_hash_sha256
+        from jsp_netdisk.tb_file
+        where file_id = #{fileId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbFileMap">
+        select file_id,
+               file_name,
+               file_size,
+               file_type,
+               file_status,
+               file_upload_time,
+               file_hash_md5,
+               file_hash_sha256
+        from jsp_netdisk.tb_file
+        <where>
+            <if test="tbFile.fileId != null">
+                and file_id = #{tbFile.fileId}
+            </if>
+            <if test="tbFile.fileName != null and tbFile.fileName != ''">
+                and file_name = #{tbFile.fileName}
+            </if>
+            <if test="tbFile.fileSize != null">
+                and file_size = #{tbFile.fileSize}
+            </if>
+            <if test="tbFile.fileType != null">
+                and file_type = #{tbFile.fileType}
+            </if>
+            <if test="tbFile.fileStatus != null">
+                and file_status = #{tbFile.fileStatus}
+            </if>
+            <if test="tbFile.fileUploadTime != null">
+                and file_upload_time = #{tbFile.fileUploadTime}
+            </if>
+            <if test="tbFile.fileHashMd5 != null and tbFile.fileHashMd5 != ''">
+                and file_hash_md5 = #{tbFile.fileHashMd5}
+            </if>
+            <if test="tbFile.fileHashSha256 != null and tbFile.fileHashSha256 != ''">
+                and file_hash_sha256 = #{tbFile.fileHashSha256}
+            </if>
+        </where>
+        limit #{offset}, #{limit}
     </select>
 
     <!--新增所有列-->

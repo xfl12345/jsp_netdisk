@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="pers.xfl.jsp_netdisk.model.dao.TbAccountDao">
+<mapper namespace="com.github.xfl12345.jsp_netdisk.model.dao.TbAccountDao">
 
-    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.TbAccount" id="TbAccountMap">
+    <resultMap type="com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount" id="TbAccountMap">
         <result property="accountId" column="account_id" jdbcType="INTEGER"/>
         <result property="username" column="username" jdbcType="VARCHAR"/>
         <result property="passwordHash" column="password_hash" jdbcType="VARCHAR"/>
@@ -14,6 +14,44 @@
         <result property="gender" column="gender" jdbcType="VARCHAR"/>
         <result property="accountStatus" column="account_status" jdbcType="INTEGER"/>
     </resultMap>
+
+    <!--以实体为条件，做统计-->
+    <select id="countAll" resultType="java.lang.Long">
+        select count(*) as c
+        from jsp_netdisk.tb_account
+        <where>
+            <if test="accountId != null">
+                and account_id = #{accountId}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="passwordHash != null and passwordHash != ''">
+                and password_hash = #{passwordHash}
+            </if>
+            <if test="passwordSalt != null and passwordSalt != ''">
+                and password_salt = #{passwordSalt}
+            </if>
+            <if test="permissionId != null">
+                and permission_id = #{permissionId}
+            </if>
+            <if test="registerTime != null">
+                and register_time = #{registerTime}
+            </if>
+            <if test="registerTimeInMs != null">
+                and register_time_in_ms = #{registerTimeInMs}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="gender != null and gender != ''">
+                and gender = #{gender}
+            </if>
+            <if test="accountStatus != null">
+                and account_status = #{accountStatus}
+            </if>
+        </where>
+    </select>
 
     <!--查询单个-->
     <select id="queryById" resultMap="TbAccountMap">
@@ -97,8 +135,6 @@
         where username = #{username}
     </select>
 
-
-
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="TbAccountMap">
         select account_id,
@@ -112,6 +148,38 @@
                gender,
                account_status
         from jsp_netdisk.tb_account
+        <where>
+            <if test="tbAccount.accountId != null">
+                and account_id = #{tbAccount.accountId}
+            </if>
+            <if test="tbAccount.username != null and tbAccount.username != ''">
+                and username = #{tbAccount.username}
+            </if>
+            <if test="tbAccount.passwordHash != null and tbAccount.passwordHash != ''">
+                and password_hash = #{tbAccount.passwordHash}
+            </if>
+            <if test="tbAccount.passwordSalt != null and tbAccount.passwordSalt != ''">
+                and password_salt = #{tbAccount.passwordSalt}
+            </if>
+            <if test="tbAccount.permissionId != null">
+                and permission_id = #{tbAccount.permissionId}
+            </if>
+            <if test="tbAccount.registerTime != null">
+                and register_time = #{tbAccount.registerTime}
+            </if>
+            <if test="tbAccount.registerTimeInMs != null">
+                and register_time_in_ms = #{tbAccount.registerTimeInMs}
+            </if>
+            <if test="tbAccount.email != null and tbAccount.email != ''">
+                and email = #{tbAccount.email}
+            </if>
+            <if test="tbAccount.gender != null and tbAccount.gender != ''">
+                and gender = #{tbAccount.gender}
+            </if>
+            <if test="tbAccount.accountStatus != null">
+                and account_status = #{tbAccount.accountStatus}
+            </if>
+        </where>
         limit #{offset}, #{limit}
     </select>
 

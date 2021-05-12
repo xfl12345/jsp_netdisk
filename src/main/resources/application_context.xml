@@ -1,53 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
         https://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
-        https://www.springframework.org/schema/context/spring-context.xsd">
+        https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <!--    <context:component-scan base-package="pers.xfl.jsp_netdisk" />-->
+    <!-- 啦啦啦 -->
     <!-- 开启注解驱动 -->
     <context:annotation-config/>
-    <!-- 自动扫描service包下的所有类-->
-    <context:component-scan base-package="pers.xfl.jsp_netdisk.model.service"/>
-    <!-- 自动扫描listener包下的所有类-->
-    <context:component-scan base-package="pers.xfl.jsp_netdisk.model.listener"/>
-
+    <!-- 优先加载Listener，不放过任何event。自动扫描listener包下的所有类 -->
+    <context:component-scan base-package="com.github.xfl12345.jsp_netdisk.model.listener"/>
     <!-- 无限套娃 之 加载所有配置文件的相对路径 -->
     <context:property-placeholder ignore-unresolvable="false" location="classpath:all_properties_path.properties"/>
+
+    <!-- 各种工具类 -->
+    <!-- 读取properties文件 的 工具类 -->
+    <bean id="myPropertiesUtils" class="com.github.xfl12345.jsp_netdisk.model.utils.MyPropertiesUtils" lazy-init="false"/>
+    <!-- Java反射机制 的 工具类 -->
+    <bean id="myReflectUtils" class="com.github.xfl12345.jsp_netdisk.model.utils.MyReflectUtils" lazy-init="false"/>
     <!-- 无限套娃 之 加载Spring工具类 -->
-    <bean id="staticSpringApp" class="pers.xfl.jsp_netdisk.StaticSpringApp" lazy-init="false" />
+    <bean id="staticSpringApp" class="com.github.xfl12345.jsp_netdisk.StaticSpringApp" lazy-init="false"/>
+
+    <!-- 各种独立的Properties对象 -->
+    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.MyPropertiesBean" id="app_conf" scope="prototype"
+          c:propertiesFileRelativePath="${app_conf_properties_file_relative_path}" />
+
+    <!-- 常量单例 -->
+    <!-- APP 常量   -->
+    <bean class="com.github.xfl12345.jsp_netdisk.appconst.MyConst" id="myConst" c:properties-ref="app_conf"/>
+    <!-- APP 版本信息   -->
+    <bean class="com.github.xfl12345.jsp_netdisk.appconst.AppInfo" id="appInfo" c:properties-ref="app_conf"/>
+    <!-- 邮件未激活的账号的权限模板   -->
+    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.EmailNotActivatedAccountPermission" id="emailNotActivatedPermission"/>
+    <!-- 普通正式会员的账号的权限模板   -->
+    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.NormalAccountPermission" id="normalAccountPermission" />
+    <!-- 格式化时间为 年-月-日 小时:分钟:秒   -->
+    <bean class="java.text.SimpleDateFormat" id="simpleDateFormat" c:pattern="yyyy-MM-dd HH:mm:ss" />
+    <!-- 单独提取时间里的 毫秒（3位数）   -->
+    <bean class="java.text.SimpleDateFormat" id="millisecondFormatter" c:pattern="SSS" />
+
+
+    <!-- 各种Listener -->
     <!-- 监听 Spring Context 实例化事件，这是个工具类 -->
-    <bean id="mySpringApplicationStartListener" class="pers.xfl.jsp_netdisk.model.listener.MySpringApplicationStartListener" lazy-init="false"/>
+    <bean id="mySpringApplicationStartListener"
+          class="com.github.xfl12345.jsp_netdisk.model.listener.MySpringApplicationStartListener" lazy-init="true"/>
     <!--解决JDBC驱动卸载问题-->
-    <bean id="contextFinalizer" class="pers.xfl.jsp_netdisk.model.utils.jdbc.ContextFinalizer" lazy-init="true" />
+    <bean id="contextFinalizer" class="com.github.xfl12345.jsp_netdisk.model.utils.jdbc.ContextFinalizer"
+          lazy-init="true"/>
     <!--监听session触发事件，实现超时自动注销登录 -->
-    <bean id="mySessionEventListener" class="pers.xfl.jsp_netdisk.model.listener.MySessionEventListener" lazy-init="true" />
-    <!-- webapp自己的版本信息 -->
-    <bean id="appInfo" class="pers.xfl.jsp_netdisk.model.appconst.AppInfo" lazy-init="true"/>
+    <bean id="mySessionEventListener" class="com.github.xfl12345.jsp_netdisk.model.listener.MySessionEventListener"
+          lazy-init="true"/>
+
+
     <!-- UUID生成器 -->
     <bean id="uuidGenerator" class="com.fasterxml.uuid.Generators"/>
     <!-- 需调用函数才能预加载、完成初始化任务的，都写在里面 -->
-    <bean id="preloadSingleton" class="pers.xfl.jsp_netdisk.model.PreLoad" lazy-init="false"/>
+    <bean id="preloadSingleton" class="com.github.xfl12345.jsp_netdisk.model.PreLoad" lazy-init="false"/>
     <!-- 通过继承PooledDataSource类，对父类进行增强，实现了全自动初始化数据库 -->
-    <bean id="dataSource" class="pers.xfl.jsp_netdisk.model.utils.jdbc.MyDataSource" scope="singleton" lazy-init="false">
-        <constructor-arg index="0" value="${db_init_sql_file_relative_path}" />
-        <constructor-arg index="1" value="${db_restart_init_sql_file_relative_path}" />
-        <constructor-arg index="2" value="${db_url_base_parameter_file_relative_path}" />
-        <constructor-arg index="3" value="${db_url_additional_parameter_file_relative_path}" />
+    <bean id="dataSource" class="com.github.xfl12345.jsp_netdisk.model.utils.jdbc.MyDataSource" lazy-init="false">
+        <constructor-arg index="0" value="${db_init_sql_file_relative_path}"/>
+        <constructor-arg index="1" value="${db_restart_init_sql_file_relative_path}"/>
+        <constructor-arg index="2" value="${db_url_base_parameter_file_relative_path}"/>
+        <constructor-arg index="3" value="${db_url_additional_parameter_file_relative_path}"/>
     </bean>
 
     <!--MyBatis SQLSessionFactory -->
     <!-- spring和MyBatis完美整合 -->
     <!-- source code URL=https://blog.csdn.net/qq_33840251/article/details/89814071 -->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" lazy-init="false">
         <!-- 指定数据源 -->
         <property name="dataSource" ref="dataSource"/>
-        <!-- 具体指定xml文件，可不配 -->
-        <!-- <property name="configLocation" value="classpath:mybatis/empty_mybatis_conf.xml"/> -->
+        <!-- 具体指定 mybatis-config.xml 文件，可不配 -->
+        <property name="configLocation" value="classpath:mybatis/empty_mybatis_conf.xml"/>
         <!-- 自动扫描mapping.xml文件，**表示迭代查找 ,,也可在mybatis-config.xml中单独指定xml文件 -->
         <!-- 配置单个xml文件 -->
         <!--<property name="mapperLocations" value="classpath:com/yaosiyuan/dao/xml/MsMerchantMapper.xml"/> -->
@@ -58,6 +85,11 @@
             </list>
         </property>
     </bean>
+    <!-- Mybatis MapperScannerConfigurer 自动扫描 将Mapper接口生成代理注入到Spring -->
+    <bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.github.xfl12345.jsp_netdisk.model.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" ref="sqlSessionFactory"/>
     </bean>
@@ -65,13 +97,33 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
-    <!-- Mybatis MapperScannerConfigurer 自动扫描 将Mapper接口生成代理注入到Spring -->
-    <bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="pers.xfl.jsp_netdisk.model.dao"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+
+    <!-- 发邮件 的 服务类， 这个服务类不免费，需要JavaEE的包 -->
+    <bean id="emailService" class="com.github.xfl12345.jsp_netdisk.model.service.EmailService" lazy-init="true">
+        <constructor-arg index="0" value="${email_properties_file_relative_path}"/>
     </bean>
-    <!--        <bean id="MybatisMapperDynamicLoader" class="pers.xfl.jsp_netdisk.model.developerhelper.MybatisMapperDynamicLoader" />-->
-    <!--        <bean id="MyConst" class="pers.xfl.jsp_netdisk.model.appconst.MyConst" scope="singleton" />-->
-    <!--        <bean id="/login" name="login" class="pers.xfl.jsp_netdisk.controller.LoginController" />-->
+    <!-- 加载邮件模板 -->
+    <bean id="verificationEmailTemplate"
+          class="com.github.xfl12345.jsp_netdisk.model.pojo.html.VerificationEmailTemplate" lazy-init="true">
+        <constructor-arg index="0" value="staticVerificationEmail.html"/>
+    </bean>
+    <!-- 自动扫描service包下的所有类 -->
+    <context:component-scan base-package="com.github.xfl12345.jsp_netdisk.model.service"/>
+
+    <!-- source code URL=https://blog.csdn.net/qq_34845394/article/details/86351317 -->
+    <!-- 在applicationContext.xml中进行配置，使用定时器
+        ref : pojo类的名称
+        method : 调用的方式名称
+        cron : cronExpression表达式
+        {秒数} {分钟} {小时} {日期} {月份} {星期} {年份(可为空)}
+        cron="0/5 * * * * ?"  //表示五秒钟执行一次
+     -->
+    <bean class="com.github.xfl12345.jsp_netdisk.model.service.TaskResetEmailVerificationMap" id="resetEmailVerificationMap" />
+    <task:scheduled-tasks>
+        <!-- 每天凌晨零点过30秒重置 EmailVerificationMap -->
+        <task:scheduled ref="resetEmailVerificationMap" method="reset" cron="30 0 0 * * ?"/>
+    </task:scheduled-tasks>
+
+    <!--    <context:component-scan base-package="com.github.xfl12345.jsp_netdisk" />-->
 
 </beans>

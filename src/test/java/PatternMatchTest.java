@@ -1,5 +1,5 @@
-import pers.xfl.jsp_netdisk.model.utils.MyStrIsOK;
-import pers.xfl.jsp_netdisk.model.utils.check.RegisterParamChecker;
+import com.github.xfl12345.jsp_netdisk.model.utils.MyStrIsOK;
+import com.github.xfl12345.jsp_netdisk.model.utils.check.RegisterFieldChecker;
 
 public class PatternMatchTest {
     public static void main(String[] args) {
@@ -69,8 +69,8 @@ public class PatternMatchTest {
 
 
         System.out.println("test password string");
-        System.out.println(RegisterParamChecker.isPasswordComplexityEnough(password));
-        System.out.println(RegisterParamChecker.isPasswordUnderLegal(password));
+        System.out.println(RegisterFieldChecker.isPasswordComplexityEnough(password));
+        System.out.println(RegisterFieldChecker.isPasswordUnderLegal(password));
 
         System.out.println("test email string");
         System.out.println(MyStrIsOK.isEmail("111@qq.com"));

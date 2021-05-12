@@ -1,29 +1,20 @@
-import pers.xfl.jsp_netdisk.model.pojo.html.TagA;
+import com.github.xfl12345.jsp_netdisk.model.utils.MyReflectUtils;
 
 import java.lang.reflect.Field;
 
 public class ReflectTest {
-    public static void main(String[] args) {
-        //Field[] fields = cls.getFields(); // 获取所有公有的成员对象及函数
-        Field[] fields = TagA.class.getDeclaredFields(); // 获取所有成员对象及函数
-        //  System.out.println(((Field)Arrays.stream(fields).toArray()[0]).getName());
 
-        boolean accessFlag;
-        int count = 0;
-        for (Field f : fields) {
-            accessFlag = f.isAccessible();
-//            if (!accessFlag)
-//                f.setAccessible(true);// 暴力反射。 私有的也可以被访问。
-            // System.out.println(f);
-            System.out.println("成员名称:" + f.getName());
-        }
+    public int k = 123;
 
+    public static void main(String[] args) throws Exception {
+        ReflectTest reflectTest = new ReflectTest();
+        MyReflectUtils  myReflectUtils = new MyReflectUtils();
+        Field field = reflectTest.getClass().getDeclaredField("k");
 
-        TagA tagA = new TagA();
-        tagA.setHref("666");
-        tagA.setTarget("888");
-        tagA.setInnerHtmlValue("123456");
-
-        System.out.println(tagA.getHtmlCode());
+        System.out.println( field.getType() );
+        System.out.println( ( myReflectUtils.cast(field.getType(), "12345"))  );
+        System.out.println( ( myReflectUtils.cast(field.getType(), "12345")).getClass().getTypeName()  );
+        field.set(  reflectTest, myReflectUtils.cast(field.getType(), "12345")  );
+        System.out.println("k=" + reflectTest.k );
     }
 }

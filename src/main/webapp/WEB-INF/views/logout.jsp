@@ -12,8 +12,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>注销</title>
 <%--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">--%>
-    <link href="static/css/login_common.css" rel="stylesheet" type="text/css"/>
-    <link href="static/css/login_special_use.css" rel="stylesheet" type="text/css"/>
+    <link href="<%=request.getContextPath() %>/static/css/login_common.css" rel="stylesheet" type="text/css"/>
+    <link href="<%=request.getContextPath() %>/static/css/login_special_use.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
     <h1 id="h1"></h1>
@@ -27,16 +27,16 @@
 <%--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>--%>
 <%--<script src="https://unpkg.com/element-ui/lib/index.js"></script>--%>
 
-<script src="static/js/ajax_util.js"></script>
+<script src="<%=request.getContextPath() %>/static/js/ajax_util.js"></script>
 <script type="text/javascript">
-    var jsInsertEle = document.getElementById("h1");
+    let jsInsertEle = document.getElementById("h1");
 
-    var postForm = function (){
-        var logoutSuccessPage = "index";
+    let postForm = function (){
+        let logoutSuccessPage = "<%=request.getContextPath() %>/index";
         let otherElement = document.getElementById("additionalContent");
         otherElement.parentNode.removeChild(otherElement);
 
-        var json_data = {};
+        let json_data = {};
         // json_data["isAcceptHtmlCode"] = true;
         ajax({
             url: "logout",
@@ -48,17 +48,17 @@
             success: function (recvData) {
                 console.log(recvData);
                 //服务器返回响应，根据响应结果，分析是否登录成功
-                var testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
-                var recvDataObj =JSON.parse(recvData);
+                let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
+                let recvDataObj =JSON.parse(recvData);
                 console.log(recvDataObj.flag);
-                var msg;
+                let msg;
                 if (recvDataObj.flag) {//成功
                     msg = "注销成功！";
                 } else { //失败
                     msg = "注销失败！"+ recvDataObj.msg +"。";
                 }
                 let t = 1;//设定跳转的时间
-                var jumpFunction = setInterval(
+                let jumpFunction = setInterval(
                     function () {
                         jsInsertEle.innerText = msg + '\n' + t + "秒后转跳！";
                         if (t === 0) {
@@ -90,7 +90,7 @@
         let buttonElement2 = document.getElementById("btn2");
         buttonElement2.innerText = "还是算了吧";
         buttonElement2.onclick = function () {
-            window.location.href='index';
+            window.location.href='<%=request.getContextPath() %>/index';
         }
         
     }

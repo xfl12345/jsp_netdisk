@@ -11,18 +11,10 @@
                 http://www.springframework.org/schema/mvc/spring-mvc.xsd
                 http://www.springframework.org/schema/context
                 http://www.springframework.org/schema/context/spring-context.xsd">
-
-    <!--    &lt;!&ndash; 自动扫描包下的所有类&ndash;&gt;-->
-    <!--    <context:component-scan base-package="pers.xfl.jsp_netdisk" use-default-filters="false">-->
-    <!--        <context:include-filter type="annotation"-->
-    <!--                                expression="org.springframework.stereotype.Controller"/>-->
-    <!--        <context:include-filter type="annotation"-->
-    <!--                                expression="org.springframework.web.bind.annotation.ControllerAdvice"/>-->
-    <!--    </context:component-scan>-->
-
+    <!-- 开启注解驱动 -->
+    <context:annotation-config/>
     <!-- 自动扫描controller包下的所有类-->
-    <context:component-scan base-package="pers.xfl.jsp_netdisk.controller" />
-
+    <context:component-scan base-package="com.github.xfl12345.jsp_netdisk.controller" />
     <!--视图解析器-->
     <beans:bean id="resourceViewResolver"  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <beans:property name="prefix" value="/WEB-INF/views/"/>
@@ -59,8 +51,7 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
-    <!--    <bean id="/login" name="login" class="pers.xfl.jsp_netdisk.controller.LoginController" />-->
-
+    <!--    <bean id="/login" name="login" class="com.github.xfl12345.jsp_netdisk.controller.LoginController" />-->
 
     <!--上传文件配置-->
     <!--    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->

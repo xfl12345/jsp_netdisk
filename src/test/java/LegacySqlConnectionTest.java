@@ -1,7 +1,7 @@
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import pers.xfl.jsp_netdisk.StaticSpringApp;
+import com.github.xfl12345.jsp_netdisk.StaticSpringApp;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class LegacySqlConnectionTest  {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws Exception {
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("application_context.xml");
         String sql = "SELECT * from tb_account";
         SqlSession sqlSession = StaticSpringApp.getSqlSession();

@@ -1,6 +1,6 @@
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
-import pers.xfl.jsp_netdisk.model.pojo.database.TbAccount;
+import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount;
 
 public class AlibabaJsonTest {
     public static void main(String[] args) {

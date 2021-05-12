@@ -3,4 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+
+    <!-- 用于输出日志 log4j:LOG4J SLF4J -->
+    <settings>
+<!--        <setting name="logImpl" value="LOG4J2"/>-->
+        <setting name="logImpl" value="SLF4J"/>
+<!--        <setting name="jdbcTypeForNull" value="NULL" />-->
+    </settings>
+
 </configuration>
+

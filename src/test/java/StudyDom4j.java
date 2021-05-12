@@ -1,5 +1,5 @@
 import org.dom4j.*;
-import pers.xfl.jsp_netdisk.model.pojo.html.TagA;
+import com.github.xfl12345.jsp_netdisk.model.pojo.html.ATag;
 
 import java.nio.charset.StandardCharsets;
 
@@ -9,7 +9,7 @@ public class StudyDom4j {
         document.setXMLEncoding(StandardCharsets.UTF_8.name());
         Element root = document.addElement("root");
 
-        TagA tagA = new TagA();
+        ATag tagA = new ATag();
         tagA.setHref("666");
         tagA.setTarget("888");
         tagA.setInnerHtmlValue("123456");

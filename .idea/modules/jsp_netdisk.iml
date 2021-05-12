@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
   <component name="FacetManager">
-    <facet type="web" name="Web">
+    <facet type="javaeeApplication" name="javaEEApplication">
       <configuration>
         <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../src/main/webapp/WEB-INF/web.xml" />
+          <deploymentDescriptor name="application.xml" url="file://$MODULE_DIR$/../../META-INF/application.xml" />
         </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/../../src/main/webapp" relative="/" />
-        </webroots>
       </configuration>
     </facet>
   </component>

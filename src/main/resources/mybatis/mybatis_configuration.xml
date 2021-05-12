@@ -19,7 +19,7 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="mybatis/mappings/tb_account.xml" />
+        <mapper resource="mybatis/mappings/TbAccountDao.xml" />
 <!--        <mapper resource="org/mybatis/example/BlogMapper.xml"/>-->
     </mappers>
 </configuration>

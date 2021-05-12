@@ -2,22 +2,71 @@ plugins {
     id 'java'
 }
 
-group 'pers.xfl'
+group 'com.github.xfl12345'
 version '1.0-SNAPSHOT'
 
+// source code URL=https://www.cnblogs.com/guohaoblog/p/13282891.html
 repositories {
+    mavenLocal()
+// 身为开发者，必备番茄工具，所以我并不必须配置成国内源
+//    maven {
+////            url = 'http://nexus.vfinance.cn:9081/content/groups/public/'
+//        url = 'http://maven.aliyun.com/nexus/content/groups/public/'
+//    }
     mavenCentral()
 }
 
 dependencies {
+    def springVersion = '5.3.6'
+    def log4jVersion = '2.14.1'
+    def slf4jVersion = '1.7.30'
+    def org_apache_poi_version = '5.0.0'
+    def javaMailVersion = '1.6.2'
+
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 
-    // MyBatis
+    // JSON support
+    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.76'
+
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.3'
+
+    // Ant support
+    // https://mvnrepository.com/artifact/org.apache.ant/ant
+    implementation group: 'org.apache.ant', name: 'ant', version: '1.10.9'
+
+    // apache commons
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2
+    implementation group: 'org.apache.commons', name: 'commons-configuration2', version: '2.7'
+
+    // XML support
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
+
+    // https://mvnrepository.com/artifact/org.dom4j/dom4j
+    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
+
+    // https://mvnrepository.com/artifact/com.j2html/j2html
+    implementation group: 'com.j2html', name: 'j2html', version: '1.4.0'
+
+    // UUID generator support
+    // https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator
+    implementation group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '4.0.1'
+
+    // JDBC Driver
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.49'
 
+    // MyBatis
     // https://mvnrepository.com/artifact/org.mybatis/mybatis
-    implementation group: 'org.mybatis', name: 'mybatis', version: '3.5.5'
+    implementation group: 'org.mybatis', name: 'mybatis', version: '3.5.7'
 
     // https://mvnrepository.com/artifact/org.mybatis/mybatis-spring
     implementation group: 'org.mybatis', name: 'mybatis-spring', version: '2.0.6'
@@ -28,78 +77,70 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-maven-plugin
 //    implementation group: 'org.mybatis.generator', name: 'mybatis-generator-maven-plugin', version: '1.4.0'
 
-    // JSON support
-    // https://mvnrepository.com/artifact/com.alibaba/fastjson
-    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.73'
-
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
-
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.3'
-
-    // JSP support
-    // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
-    implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-
-    // Ant support
-    // https://mvnrepository.com/artifact/org.apache.ant/ant
-    implementation group: 'org.apache.ant', name: 'ant', version: '1.10.9'
-
-    // util collections
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
-
-    // XML support
-    // https://mvnrepository.com/artifact/org.jsoup/jsoup
-    implementation group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
-
-    // https://mvnrepository.com/artifact/org.dom4j/dom4j
-    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
-
-    // HTML support
-    // https://mvnrepository.com/artifact/com.j2html/j2html
-    implementation group: 'com.j2html', name: 'j2html', version: '1.4.0'
-
     // Spring and SpringMVC
     // https://mvnrepository.com/artifact/org.springframework/spring-core
-    // implementation group: 'org.springframework', name: 'spring-core', version: '5.3.4'
+    // implementation group: 'org.springframework', name: 'spring-core', version: springVersion
 
     // https://mvnrepository.com/artifact/org.springframework/spring-context
-    // implementation group: 'org.springframework', name: 'spring-context', version: '5.3.4'
+    // implementation group: 'org.springframework', name: 'spring-context', version: springVersion
 
     // https://mvnrepository.com/artifact/org.springframework/spring-webmvc
-    implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.3.4'
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: springVersion
 
     // https://mvnrepository.com/artifact/org.springframework/spring-jdbc
-    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.4'
+    implementation group: 'org.springframework', name: 'spring-jdbc', version: springVersion
 
     // poi
     // https://mvnrepository.com/artifact/org.apache.poi/poi
-    implementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
+    implementation group: 'org.apache.poi', name: 'poi', version: org_apache_poi_version
 
-    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-schemas
-    implementation group: 'org.apache.poi', name: 'poi-ooxml-schemas', version: '4.1.2'
+    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-full
+    implementation group: 'org.apache.poi', name: 'poi-ooxml-full', version: org_apache_poi_version
 
     // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: org_apache_poi_version
 
     // https://mvnrepository.com/artifact/org.apache.xmlbeans/xmlbeans
-    implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '5.0.0'
-
-    // LOG support
-    // https://mvnrepository.com/artifact/org.slf4j/slf4j-nop
-    implementation group: 'org.slf4j', name: 'slf4j-nop', version: '2.0.0-alpha1'
-
-    // UUID generator support
-    // https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator
-    implementation group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '4.0.1'
+    implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: org_apache_poi_version
 
     // Java Email support
-    // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
-    implementation group: 'javax.mail', name: 'javax.mail-api', version: '1.6.2'
+    // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+    implementation group: 'com.sun.mail', name: 'javax.mail', version: javaMailVersion
 
-    // implementation fileTree(dir:'lib',includes:['*jar'])
+    // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
+    implementation group: 'javax.mail', name: 'javax.mail-api', version: javaMailVersion
+
+    // Java Log framework - slf4j  log4j2
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-nop
+    implementation group: 'org.slf4j', name: 'slf4j-nop', version: slf4jVersion
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-ext
+    implementation group: 'org.slf4j', name: 'slf4j-ext', version: slf4jVersion
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-web
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-web', version: log4jVersion
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
+
+    // solution from URL=https://blog.csdn.net/weixin_42697074/article/details/88084565
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-jcl', version: log4jVersion
+
+    // JSP support
+    implementation fileTree(dir:'lib',includes:['*jar'])
+
+    // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
+//    implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
 
 }
 
@@ -124,8 +165,8 @@ dependencies {
 //        ant.properties['password'] = properties2.getProperty("password")
 //        ant.properties['src_main_java'] = sourceSets.main.java.srcDirs[0].path
 //        ant.properties['src_main_resources'] = sourceSets.main.resources.srcDirs[0].path
-//        ant.properties['modelPackage'] = "pers.xfl.jsp_netdisk.model.dao"
-//        ant.properties['mapperPackage'] = "pers.xfl.jsp_netdisk.model.dao.mappers"
+//        ant.properties['modelPackage'] = "com.github.xfl12345.jsp_netdisk.model.dao"
+//        ant.properties['mapperPackage'] = "com.github.xfl12345.jsp_netdisk.model.dao.mappers"
 //        ant.properties['sqlMapperPackage'] = "mybatis/mappings"
 //        ant.taskdef(
 //                name: 'mbgenerator',

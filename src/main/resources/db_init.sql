@@ -95,8 +95,9 @@ create table tb_permission
     upload_file          int not null comment '上传文件权限的代码',
     download_file        int not null comment '下载文件权限的代码',
     account_operation    int not null comment '管理员权限的代码',
-    account_info_operation int not null comment '账号信息公开程度的代码',
-    file_operation       int not null comment '文件操作权限的代码'
+    account_info_operation int not null default 0 comment '账号信息公开程度的代码',
+    file_operation       int not null comment '文件操作权限的代码',
+    unique least_waste(upload_file, download_file, account_operation, account_info_operation, file_operation)
 )AUTO_INCREMENT=10000 ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=Dynamic;
 
 /*==============================================================*/
@@ -151,26 +152,51 @@ create table account_session
     unique key index_session_id (session_id)
 )ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=Dynamic;
 
+
+/* MySQL 5.7 定义单行数据最大 65535bytes，故除去email字段的255*4个字节，
+   剩余 16128*4个字节用于其它字段
+ */
 /*==============================================================*/
-/* Table: email_verification_code                               */
+/* Table: email_verification                                    */
 /*==============================================================*/
-create table email_verification_code
+create table email_verification
 (
     `email` char(255) not null comment '账号绑定的电子邮箱',
-    `verification_code` char(8) not null comment '随机验证码',
-    unique key index_email (email)
+    `verification_log` varchar(16128) not null comment '发送过的验证码都以JSON文本形式记录下来',
+    unique key index_email (email(255))
 )ENGINE=InnoDB CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+/*
+ 超级用户的账号权限
+ */
 INSERT INTO `tb_permission` (`permission_id`, `upload_file`, `download_file`, `account_operation`, `account_info_operation`, `file_operation`)
 VALUES ('1', '30', '30', '0', '0', '666');
 
+/*
+ 新注册用户但邮箱未激活的账号权限
+ */
+INSERT INTO `tb_permission` (`permission_id`, `upload_file`, `download_file`, `account_operation`, `account_info_operation`, `file_operation`) VALUES ('2', '0', '0', '30', '0', '0');
+
+/*
+ 新注册用户且邮箱已激活的账号权限（正式会员，普通用户）
+ */
+INSERT INTO `tb_permission` (`permission_id`, `upload_file`, `download_file`, `account_operation`, `account_info_operation`, `file_operation`) VALUES ('3', '10', '10', '20', '0', '600');
+
+
+
+/*
+ 超级用户的账号
+ */
 INSERT INTO `tb_account` (`account_id`, username, `password_hash`, `password_salt`, `permission_id`,
                           `register_time`, `register_time_in_ms`, `email`, `gender`, `account_status`)
 VALUES ('1', 'root', 'bda02209db09767384dd86fee7f21cff', '7e1eaa80738a082f3783ec471f2b60fa21958447f537f812f7bbb9e4c2fbec3a791fe7f9be190db5e5944fb31830ea156ee87ec4bf51973f2da3f28ac3f01720',
         '1', '2021-01-08 00:00:00', '0', '1046539849@qq.com', '0', '1');
 
+/*
+ 基本的目录结构
+ */
 INSERT INTO `tb_directory` (`directory_id`, `parent_directory_id`, `account_id`, `directory_name`) VALUES ('1', NULL, '1', 'sys');
 INSERT INTO `tb_directory` (`directory_id`, `parent_directory_id`, `account_id`, `directory_name`) VALUES ('10', '1', '1', 'media');
 INSERT INTO `tb_directory` (`directory_id`, `parent_directory_id`, `account_id`, `directory_name`) VALUES ('20', NULL, '1', 'root');

@@ -1,4 +1,4 @@
-import pers.xfl.jsp_netdisk.model.appconst.LoginApiResult;
+import com.github.xfl12345.jsp_netdisk.appconst.api.result.LoginApiResult;
 
 import java.util.Arrays;
 

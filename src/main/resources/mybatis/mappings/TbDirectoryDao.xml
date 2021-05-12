@@ -1,13 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="pers.xfl.jsp_netdisk.model.dao.TbDirectoryDao">
+<mapper namespace="com.github.xfl12345.jsp_netdisk.model.dao.TbDirectoryDao">
 
-    <resultMap type="pers.xfl.jsp_netdisk.model.pojo.database.TbDirectory" id="TbDirectoryMap">
+    <resultMap type="com.github.xfl12345.jsp_netdisk.model.pojo.database.TbDirectory" id="TbDirectoryMap">
         <result property="directoryId" column="directory_id" jdbcType="INTEGER"/>
         <result property="parentDirectoryId" column="parent_directory_id" jdbcType="INTEGER"/>
         <result property="accountId" column="account_id" jdbcType="INTEGER"/>
         <result property="directoryName" column="directory_name" jdbcType="VARCHAR"/>
     </resultMap>
+
+    <!--以实体为条件，做统计-->
+    <select id="countAll" resultType="java.lang.Long">
+        select count(*) as c
+        from jsp_netdisk.tb_directory
+        <where>
+            <if test="directoryId != null">
+                and directory_id = #{directoryId}
+            </if>
+            <if test="parentDirectoryId != null and parentDirectoryId != 0L">
+                and parent_directory_id = #{parentDirectoryId}
+            </if>
+            <if test="parentDirectoryId == 0L">
+                and parent_directory_id is NULL
+            </if>
+            <if test="accountId != null">
+                and account_id = #{accountId}
+            </if>
+            <if test="directoryName != null and directoryName != ''">
+                and directory_name = #{directoryName}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbDirectoryMap">
+        select
+        directory_id, parent_directory_id, account_id, directory_name
+        from jsp_netdisk.tb_directory
+        <where>
+            <if test="directoryId != null">
+                and directory_id = #{directoryId}
+            </if>
+            <if test="parentDirectoryId != null and parentDirectoryId != 0L">
+                and parent_directory_id = #{parentDirectoryId}
+            </if>
+            <if test="parentDirectoryId == 0L">
+                and parent_directory_id is NULL
+            </if>
+            <if test="accountId != null">
+                and account_id = #{accountId}
+            </if>
+            <if test="directoryName != null and directoryName != ''">
+                and directory_name = #{directoryName}
+            </if>
+        </where>
+    </select>
 
     <!--查询单个-->
     <select id="queryById" resultMap="TbDirectoryMap">
@@ -22,45 +69,55 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="TbDirectoryMap">
         select directory_id,
-               parent_directory_id,
-               account_id,
-               directory_name
-        from jsp_netdisk.tb_directory
-        limit #{offset}, #{limit}
-    </select>
-
-    <!--通过实体作为筛选条件查询-->
-    <select id="queryAll" resultMap="TbDirectoryMap">
-        select
-        directory_id, parent_directory_id, account_id, directory_name
+        parent_directory_id,
+        account_id,
+        directory_name
         from jsp_netdisk.tb_directory
         <where>
-            <if test="directoryId != null">
-                and directory_id = #{directoryId}
+            <if test="tbDirectory.directoryId != null">
+                and directory_id = #{tbDirectory.directoryId}
             </if>
-            <if test="parentDirectoryId != null">
-                and parent_directory_id = #{parentDirectoryId}
+            <if test="tbDirectory.parentDirectoryId != null and tbDirectory.parentDirectoryId != 0L">
+                and parent_directory_id = #{tbDirectory.parentDirectoryId}
             </if>
-            <if test="accountId != null">
-                and account_id = #{accountId}
+            <if test="tbDirectory.parentDirectoryId == 0L">
+                and parent_directory_id is NULL
             </if>
-            <if test="directoryName != null and directoryName != ''">
-                and directory_name = #{directoryName}
+            <if test="tbDirectory.accountId != null">
+                and account_id = #{tbDirectory.accountId}
+            </if>
+            <if test="tbDirectory.directoryName != null and tbDirectory.directoryName != ''">
+                and directory_name = #{tbDirectory.directoryName}
             </if>
         </where>
+        limit #{offset}, #{limit}
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="directoryId" useGeneratedKeys="true">
         insert into jsp_netdisk.tb_directory(parent_directory_id, account_id, directory_name)
-        values (#{parentDirectoryId}, #{accountId}, #{directoryName})
+        values (
+        <if test="parentDirectoryId == 0L">
+            NULL
+        </if>
+        <if test="parentDirectoryId != 0L">
+            #{parentDirectoryId}
+        </if>
+        ,#{accountId},#{directoryName})
     </insert>
 
     <insert id="insertBatch" keyProperty="directoryId" useGeneratedKeys="true">
         insert into jsp_netdisk.tb_directory(parent_directory_id, account_id, directory_name)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.parentDirectoryId}, #{entity.accountId}, #{entity.directoryName})
+            (
+            <if test="entity.parentDirectoryId == 0L">
+                NULL
+            </if>
+            <if test="entity.parentDirectoryId != 0L">
+                #{entity.parentDirectoryId}
+            </if>
+            , #{entity.accountId}, #{entity.directoryName})
         </foreach>
     </insert>
 
@@ -68,7 +125,14 @@
         insert into jsp_netdisk.tb_directory(parent_directory_id, account_id, directory_name)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.parentDirectoryId}, #{entity.accountId}, #{entity.directoryName})
+            (
+            <if test="entity.parentDirectoryId == 0L">
+                NULL
+            </if>
+            <if test="entity.parentDirectoryId != 0L">
+                #{entity.parentDirectoryId}
+            </if>
+            , #{entity.accountId}, #{entity.directoryName})
         </foreach>
         on duplicate key update
         parent_directory_id = values(parent_directory_id) , account_id = values(account_id) , directory_name =
@@ -82,8 +146,11 @@
             <if test="parentDirectoryId != null">
                 parent_directory_id = #{parentDirectoryId},
             </if>
-            <if test="accountId != null">
-                account_id = #{accountId},
+            <if test="parentDirectoryId != null and parentDirectoryId != 0L">
+                and parent_directory_id = #{parentDirectoryId}
+            </if>
+            <if test="parentDirectoryId == 0L">
+                and parent_directory_id is NULL
             </if>
             <if test="directoryName != null and directoryName != ''">
                 directory_name = #{directoryName},

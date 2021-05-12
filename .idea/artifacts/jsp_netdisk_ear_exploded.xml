@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-ear" name="jsp_netdisk:ear exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/jsp_netdisk_ear_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="jsp_netdisk/javaeeApplication/javaEEApplication" />
+    </root>
+  </artifact>
+</component>
