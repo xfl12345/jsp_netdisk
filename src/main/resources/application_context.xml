@@ -18,13 +18,16 @@
 
     <!-- 各种工具类 -->
     <!-- 读取properties文件 的 工具类 -->
-    <bean id="myPropertiesUtils" class="com.github.xfl12345.jsp_netdisk.model.utils.MyPropertiesUtils" lazy-init="false"/>
+    <bean id="myPropertiesUtils" class="com.github.xfl12345.jsp_netdisk.model.utility.MyPropertiesUtils" lazy-init="false"/>
     <!-- Java反射机制 的 工具类 -->
-    <bean id="myReflectUtils" class="com.github.xfl12345.jsp_netdisk.model.utils.MyReflectUtils" lazy-init="false"/>
+    <bean id="myReflectUtils" class="com.github.xfl12345.jsp_netdisk.model.utility.MyReflectUtils" lazy-init="false"/>
+    <!-- 检查JSON格式是否符合要求的工具类 -->
+    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.JsonSchemaCheck" id="baseRequestObjectChecker"
+          c:jsonSchemaFilePath="json/schema/base_request_object.json" />
     <!-- 无限套娃 之 加载Spring工具类 -->
     <bean id="staticSpringApp" class="com.github.xfl12345.jsp_netdisk.StaticSpringApp" lazy-init="false"/>
 
-    <!-- 各种独立的Properties对象 -->
+    <!-- 各种独立的Properties对象 （其它类的初始化需要用到这个bean，但也只是初始化阶段需要，所以设置成多例模式，避免内存常驻） -->
     <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.MyPropertiesBean" id="app_conf" scope="prototype"
           c:propertiesFileRelativePath="${app_conf_properties_file_relative_path}" />
 
@@ -48,7 +51,7 @@
     <bean id="mySpringApplicationStartListener"
           class="com.github.xfl12345.jsp_netdisk.model.listener.MySpringApplicationStartListener" lazy-init="true"/>
     <!--解决JDBC驱动卸载问题-->
-    <bean id="contextFinalizer" class="com.github.xfl12345.jsp_netdisk.model.utils.jdbc.ContextFinalizer"
+    <bean id="contextFinalizer" class="com.github.xfl12345.jsp_netdisk.model.utility.jdbc.ContextFinalizer"
           lazy-init="true"/>
     <!--监听session触发事件，实现超时自动注销登录 -->
     <bean id="mySessionEventListener" class="com.github.xfl12345.jsp_netdisk.model.listener.MySessionEventListener"
@@ -60,7 +63,7 @@
     <!-- 需调用函数才能预加载、完成初始化任务的，都写在里面 -->
     <bean id="preloadSingleton" class="com.github.xfl12345.jsp_netdisk.model.PreLoad" lazy-init="false"/>
     <!-- 通过继承PooledDataSource类，对父类进行增强，实现了全自动初始化数据库 -->
-    <bean id="dataSource" class="com.github.xfl12345.jsp_netdisk.model.utils.jdbc.MyDataSource" lazy-init="false">
+    <bean id="dataSource" class="com.github.xfl12345.jsp_netdisk.model.utility.jdbc.MyDataSource" lazy-init="false">
         <constructor-arg index="0" value="${db_init_sql_file_relative_path}"/>
         <constructor-arg index="1" value="${db_restart_init_sql_file_relative_path}"/>
         <constructor-arg index="2" value="${db_url_base_parameter_file_relative_path}"/>

@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.StaticSpringApp" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.appconst.AppInfo" %>
-<%@ page import="com.github.xfl12345.jsp_netdisk.model.utils.MyStrIsOK" %>
+<%@ page import="com.github.xfl12345.jsp_netdisk.model.utility.MyStrIsOK" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.appconst.field.MySessionAttributes" %>
 <%

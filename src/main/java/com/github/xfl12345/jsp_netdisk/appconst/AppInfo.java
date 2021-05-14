@@ -1,7 +1,7 @@
 package com.github.xfl12345.jsp_netdisk.appconst;
 
 import com.github.xfl12345.jsp_netdisk.StaticSpringApp;
-import com.github.xfl12345.jsp_netdisk.model.utils.MyPropertiesUtils;
+import com.github.xfl12345.jsp_netdisk.model.utility.MyPropertiesUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -58,7 +58,7 @@ public class AppInfo {
                         + "." + f.getName();
                 //完成赋值任务
                 if(properties.containsKey(key))
-                    f.set(this,  myReflectUtils.cast(f.getType(), (String) properties.get(key)) );
+                    f.set(this,  myReflectUtils.castToWrapperClassObject(f.getType(), (String) properties.get(key)) );
             } catch (Exception e) {
                 e.printStackTrace();
             }

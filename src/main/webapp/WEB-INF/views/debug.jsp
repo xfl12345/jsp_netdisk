@@ -14,12 +14,16 @@
     <link href="<%=request.getContextPath() %>/static/css/login_common.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<%
 
-
-
-%>
-<div id="jsInsert" class="jsInsert">
+<div id="jsInsert" class="jsInsert" style="border-style: solid">
+</div>
+<br>
+<br>
+<div id="formTable">
+    <label for="requestURL"></label><input id="requestURL" class="jsInsert" type="text">
+    <br>
+    <br>
+    <label for="requsetInput"></label><textarea id="requsetInput" class="jsInsert" type="text"></textarea>
 </div>
 <br>
 <br>
@@ -33,7 +37,7 @@
     let postForm = function (){
         let json_data = {};
         ajax({
-            url: "debug",
+            url: "api/debug",
             type: 'post',
             data: json_data,
             dataType: 'json',
@@ -44,8 +48,8 @@
                 //服务器返回响应，根据响应结果，分析是否登录成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj =JSON.parse(recvData);
-                console.log(recvDataObj.flag);
-                jsInsertEle.innerText = recvDataObj.msg;
+                console.log(recvDataObj.success);
+                jsInsertEle.innerText = recvDataObj.message;
             },
             //异常处理
             error: function (e) {

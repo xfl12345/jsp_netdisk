@@ -4,9 +4,9 @@
     Author     : xfl666
 --%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
-<%@ page import="com.github.xfl12345.jsp_netdisk.model.utils.MyStrIsOK" %>
+<%@ page import="com.github.xfl12345.jsp_netdisk.model.utility.MyStrIsOK" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.appconst.MyConst" %>
-<%@ page import="com.github.xfl12345.jsp_netdisk.appconst.field.LoginRequestField" %>
+<%@ page import="com.github.xfl12345.jsp_netdisk.appconst.api.request.LoginRequestField" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.appconst.field.TbAccountField" %>
 <!doctype html>
 <html>
@@ -124,9 +124,9 @@
                 //服务器返回响应，根据响应结果，分析是否登录成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj = JSON.parse(recvData);
-                console.log(recvDataObj.flag);
-                if (recvDataObj.flag) {//成功
-                    btnEle.innerText = recvDataObj.msg + "";
+                console.log(recvDataObj.success);
+                if (recvDataObj.success) {//成功
+                    btnEle.innerText = recvDataObj.message + "";
                     formTableEle.style.display = "None";
                     document.getElementById("bottomDiv").style.display = "None";
                     btnEle.onclick = function () {
@@ -144,7 +144,7 @@
                             t--;
                         }, 1000); //启动1秒定时
                 } else { //失败
-                    document.getElementById(jsInsertDivId).innerText = "登录失败！" + recvDataObj.msg + "。";
+                    document.getElementById(jsInsertDivId).innerText = "登录失败！" + recvDataObj.message + "。";
                 }
             },
             //异常处理

@@ -3,8 +3,9 @@ package com.github.xfl12345.jsp_netdisk;
 import com.fasterxml.uuid.Generators;
 import com.github.xfl12345.jsp_netdisk.appconst.AppInfo;
 import com.github.xfl12345.jsp_netdisk.appconst.MyConst;
-import com.github.xfl12345.jsp_netdisk.model.utils.MyPropertiesUtils;
-import com.github.xfl12345.jsp_netdisk.model.utils.MyReflectUtils;
+import com.github.xfl12345.jsp_netdisk.model.pojo.JsonSchemaCheck;
+import com.github.xfl12345.jsp_netdisk.model.utility.MyPropertiesUtils;
+import com.github.xfl12345.jsp_netdisk.model.utility.MyReflectUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.jsoup.nodes.Document;
@@ -13,7 +14,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import com.github.xfl12345.jsp_netdisk.model.pojo.html.VerificationEmailTemplate;
-import com.github.xfl12345.jsp_netdisk.model.utils.jdbc.MyDataSource;
+import com.github.xfl12345.jsp_netdisk.model.utility.jdbc.MyDataSource;
 
 import java.text.SimpleDateFormat;
 
@@ -25,6 +26,7 @@ public class StaticSpringApp implements ApplicationContextAware {
     public static MyConst myConst;
     public static AppInfo appInfo;
     public static MyDataSource myDataSource;
+    public static JsonSchemaCheck baseRequestObjectChecker;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -35,6 +37,7 @@ public class StaticSpringApp implements ApplicationContextAware {
         myConst = springAppContext.getBean(MyConst.class);
         appInfo = springAppContext.getBean(AppInfo.class);
         myDataSource = springAppContext.getBean(MyDataSource.class);
+        baseRequestObjectChecker = getJsonSchemaCheck("baseRequestObjectChecker");
     }
 
     public static <T> T getBean(Class<T> requiredType) throws BeansException{
@@ -62,6 +65,10 @@ public class StaticSpringApp implements ApplicationContextAware {
     }
     public static SimpleDateFormat getMillisecondFormatter(){
         return springAppContext.getBean("millisecondFormatter",SimpleDateFormat.class);
+    }
+
+    public static JsonSchemaCheck getJsonSchemaCheck(String beanId){
+        return springAppContext.getBean(beanId, JsonSchemaCheck.class);
     }
 
 }

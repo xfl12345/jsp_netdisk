@@ -1,5 +1,5 @@
-import com.github.xfl12345.jsp_netdisk.model.utils.MyStrIsOK;
-import com.github.xfl12345.jsp_netdisk.model.utils.check.RegisterFieldChecker;
+import com.github.xfl12345.jsp_netdisk.model.utility.MyStrIsOK;
+import com.github.xfl12345.jsp_netdisk.model.utility.check.RegisterFieldChecker;
 
 public class PatternMatchTest {
     public static void main(String[] args) {

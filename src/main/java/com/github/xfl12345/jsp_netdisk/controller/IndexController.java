@@ -27,15 +27,15 @@ public class IndexController {
         if(tbAccountService.checkIsLoggedIn(request.getSession())) {
 //            modelAndView.addObject("divFormTitle","您已登录！");
             modelAndView.addObject("btn1text", "进入网盘");
-            modelAndView.addObject("btn1url", "user/home");
+            modelAndView.addObject("btn1url", "account/home");
             modelAndView.addObject("btn2text", "注销登录");
-            modelAndView.addObject("btn2url", "user/logout");
+            modelAndView.addObject("btn2url", "account/logout");
         }
         else{
             modelAndView.addObject("btn1text", "登录");
-            modelAndView.addObject("btn1url", "user/login");
+            modelAndView.addObject("btn1url", "account/login");
             modelAndView.addObject("btn2text", "注册");
-            modelAndView.addObject("btn2url", "user/register");
+            modelAndView.addObject("btn2url", "account/register");
         }
         return modelAndView;
     }

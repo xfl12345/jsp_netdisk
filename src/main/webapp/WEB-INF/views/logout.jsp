@@ -50,12 +50,12 @@
                 //服务器返回响应，根据响应结果，分析是否登录成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj =JSON.parse(recvData);
-                console.log(recvDataObj.flag);
+                console.log(recvDataObj.success);
                 let msg;
-                if (recvDataObj.flag) {//成功
+                if (recvDataObj.success) {//成功
                     msg = "注销成功！";
                 } else { //失败
-                    msg = "注销失败！"+ recvDataObj.msg +"。";
+                    msg = "注销失败！"+ recvDataObj.message +"。";
                 }
                 let t = 1;//设定跳转的时间
                 let jumpFunction = setInterval(

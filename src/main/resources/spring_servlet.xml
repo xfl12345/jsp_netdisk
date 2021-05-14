@@ -14,21 +14,11 @@
     <!-- 开启注解驱动 -->
     <context:annotation-config/>
     <!-- 自动扫描controller包下的所有类-->
-    <context:component-scan base-package="com.github.xfl12345.jsp_netdisk.controller" />
-    <!--视图解析器-->
-    <beans:bean id="resourceViewResolver"  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <beans:property name="prefix" value="/WEB-INF/views/"/>
-        <beans:property name="suffix" value=".jsp"/>
-        <!--        <beans:property name="order" value="0"/>-->
-    </beans:bean>
-    <mvc:default-servlet-handler/>
-    <!-- 静态文件-->
-    <mvc:resources mapping="/static/**" location="/static/"/>
-    <mvc:resources mapping="/html/**" location="/html/"/>
-    <!--    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />-->
-    <!--    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />-->
+    <context:component-scan base-package="com.github.xfl12345.jsp_netdisk.controller"/>
 
-    <!--注解驱动，以使得访问路径与方法的匹配可以通过注解配置-->
+    <!-- 静态资源能访问，动态映射的请求就不行 -->
+    <mvc:default-servlet-handler/>
+    <!-- 注解驱动，以使得访问路径与方法的匹配可以通过注解配置 -->
     <!-- json 配置-->
     <mvc:annotation-driven >
         <mvc:message-converters>
@@ -50,6 +40,20 @@
             </beans:bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
+    <!-- 静态文件 -->
+    <mvc:resources mapping="/static/**" location="/static/"/>
+<!--    <mvc:resources mapping="/html/**" location="/html/"/>-->
+    <!-- 视图解析器，解析动态映射 -->
+    <beans:bean id="resourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <beans:property name="prefix" value="/WEB-INF/views/"/>
+        <beans:property name="suffix" value=".jsp"/>
+<!--        <beans:property name="order" value="0"/>-->
+    </beans:bean>
+
+    <!--    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />-->
+    <!--    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />-->
+
+
 
     <!--    <bean id="/login" name="login" class="com.github.xfl12345.jsp_netdisk.controller.LoginController" />-->
 

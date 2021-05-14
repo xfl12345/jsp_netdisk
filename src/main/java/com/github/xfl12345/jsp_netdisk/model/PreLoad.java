@@ -1,14 +1,8 @@
 package com.github.xfl12345.jsp_netdisk.model;
 
-import com.fasterxml.uuid.EthernetAddress;
 import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.ext.FileBasedTimestampSynchronizer;
-import com.fasterxml.uuid.impl.TimeBasedGenerator;
-import com.github.xfl12345.jsp_netdisk.model.utils.jdbc.MyDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class PreLoad {
 

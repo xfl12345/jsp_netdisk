@@ -6,7 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
-<%@ page import="com.github.xfl12345.jsp_netdisk.appconst.field.RegisterRequestField" %>
+<%@ page import="com.github.xfl12345.jsp_netdisk.appconst.api.request.RegisterRequestField" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.appconst.field.TbAccountField" %>
 <!DOCTYPE html>
 <html>
@@ -171,13 +171,13 @@
                 console.log(recvData);
                 //服务器返回响应，根据响应结果，分析是否登录成功
                 let recvDataObj = JSON.parse(recvData);
-                console.log(recvDataObj.flag);
-                if (recvDataObj.flag) {//成功
+                console.log(recvDataObj.success);
+                if (recvDataObj.success) {//成功
                     formTableEle.style.display = "None";
                     bottomDivEle.style.display = "None";
                     btnEle.style.marginTop = "30px";
                     btnEle.innerText = "注册成功";
-                    jsInsertDiv.innerHTML = "" + recvDataObj.msg;
+                    jsInsertDiv.innerHTML = "" + recvDataObj.message;
 
                     btnEle.onclick = function () {
                         window.location.href = successPage;
@@ -193,7 +193,7 @@
                             t--;
                         }, 1000); //启动1秒定时
                 } else { //失败
-                   jsInsertDiv.innerHTML = "" + recvDataObj.msg;
+                   jsInsertDiv.innerHTML = "" + recvDataObj.message;
                 }
             },
             //异常处理

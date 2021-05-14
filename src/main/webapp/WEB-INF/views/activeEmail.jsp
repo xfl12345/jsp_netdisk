@@ -4,11 +4,13 @@
     Author     : xfl666
 --%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
-<%@ page import="com.github.xfl12345.jsp_netdisk.model.utils.MyStrIsOK" %>
+<%@ page import="com.github.xfl12345.jsp_netdisk.model.utility.MyStrIsOK" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.appconst.MyConst" %>
 <%@ page import="static com.github.xfl12345.jsp_netdisk.StaticSpringApp.myConst" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.appconst.field.*" %>
 <%@ page import="com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount" %>
+<%@ page import="com.github.xfl12345.jsp_netdisk.appconst.api.request.RegisterRequestField" %>
+<%@ page import="com.github.xfl12345.jsp_netdisk.appconst.api.request.EmailVerificationRequestField" %>
 <!doctype html>
 <html>
 <head>
@@ -150,9 +152,9 @@
                 //服务器返回响应，根据响应结果，分析是否登录成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj = JSON.parse(recvData);
-                console.log(recvDataObj.flag);
-                if (recvDataObj.flag) {//成功
-                    btnEle.innerText = recvDataObj.msg + "";
+                console.log(recvDataObj.success);
+                if (recvDataObj.success) {//成功
+                    btnEle.innerText = recvDataObj.message + "";
                     formTableEle.style.display = "none";
                     btn2Ele.style.display = "none";
                     jsInsertDiv2Ele.style.display = "none";
@@ -172,7 +174,7 @@
                             t--;
                         }, 1000); //启动1秒定时
                 } else { //失败
-                    jsInsertDivEle.innerText = "验证失败！" + recvDataObj.msg + "。";
+                    jsInsertDivEle.innerText = "验证失败！" + recvDataObj.message + "。";
                 }
             },
             //异常处理
@@ -205,8 +207,8 @@
                 //服务器返回响应，根据响应结果，分析是否登录成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj = JSON.parse(recvData);
-                console.log(recvDataObj.flag);
-                if (recvDataObj.flag) {//成功
+                console.log(recvDataObj.success);
+                if (recvDataObj.success) {//成功
                     let btnOldOnClickEvent = btn2Ele.onclick;
                     btn2Ele.onclick = null;
                     let btnOldText = btn2Ele.innerText;
@@ -224,7 +226,7 @@
                             t--;
                         }, 1000); //启动1秒定时
                 } else { //失败
-                    jsInsertDiv2Ele.innerText = "请求失败！" + recvDataObj.msg + "。";
+                    jsInsertDiv2Ele.innerText = "请求失败！" + recvDataObj.message + "。";
                 }
             },
             //异常处理

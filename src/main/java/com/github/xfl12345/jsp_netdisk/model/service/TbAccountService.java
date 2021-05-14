@@ -2,18 +2,24 @@ package com.github.xfl12345.jsp_netdisk.model.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.xfl12345.jsp_netdisk.StaticSpringApp;
+import com.github.xfl12345.jsp_netdisk.appconst.api.result.JsonApiResult;
 import com.github.xfl12345.jsp_netdisk.appconst.api.result.*;
 import com.github.xfl12345.jsp_netdisk.appconst.MyConst;
-import com.github.xfl12345.jsp_netdisk.appconst.field.RegisterRequestField;
+import com.github.xfl12345.jsp_netdisk.appconst.api.request.JsonApiRequestField;
+import com.github.xfl12345.jsp_netdisk.appconst.api.request.RegisterRequestField;
 import com.github.xfl12345.jsp_netdisk.appconst.field.MySessionAttributes;
 import com.github.xfl12345.jsp_netdisk.appconst.field.TbAccountField;
 import com.github.xfl12345.jsp_netdisk.model.dao.AccountSessionDao;
 import com.github.xfl12345.jsp_netdisk.model.dao.TbAccountDao;
+import com.github.xfl12345.jsp_netdisk.model.pojo.api.request.BaseRequestObject;
+import com.github.xfl12345.jsp_netdisk.model.pojo.api.request.LoginRequestData;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.AccountSession;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount;
+import com.github.xfl12345.jsp_netdisk.model.pojo.api.response.JsonCommonApiResponseObject;
 import com.github.xfl12345.jsp_netdisk.model.pojo.result.RegisterResult;
-import com.github.xfl12345.jsp_netdisk.model.utils.MyStrIsOK;
-import com.github.xfl12345.jsp_netdisk.model.utils.check.RegisterFieldChecker;
+import com.github.xfl12345.jsp_netdisk.model.service.api.JsonCommonApiCall;
+import com.github.xfl12345.jsp_netdisk.model.utility.MyStrIsOK;
+import com.github.xfl12345.jsp_netdisk.model.utility.check.RegisterFieldChecker;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -37,7 +43,7 @@ import java.util.List;
  * @since 2021-04-19 16:00:51
  */
 @Service("tbAccountService")
-public class TbAccountService {
+public class TbAccountService implements JsonCommonApiCall {
 
     private final Logger logger = LoggerFactory.getLogger(TbAccountService.class);
 
@@ -53,6 +59,45 @@ public class TbAccountService {
     @Autowired
     private EmailVerificationService emailVerificationService;
 
+    public static final String jsonApiVersion = "1";
+
+    /**
+     * 检查完JSON数据结构是否合法之后，调用具体的业务函数
+     */
+    @Override
+    public JsonCommonApiResponseObject getResult(HttpServletRequest request, JSONObject object) {
+        JsonCommonApiResponseObject responseObject = new JsonCommonApiResponseObject(jsonApiVersion);
+        BaseRequestObject baseRequestObject = object.toJavaObject(BaseRequestObject.class);
+        try {
+            //兼容旧API版本的请求
+            switch (baseRequestObject.version) {
+                //当前版本（最新版本）
+                case jsonApiVersion:
+                    //选择操作
+                    switch (baseRequestObject.operation) {
+                        //登录
+                        case JsonApiRequestField.Account.login:
+                            LoginRequestData loginRequestData = baseRequestObject.data.toJavaObject(LoginRequestData.class);
+                            LoginApiResult loginApiResult = login(request.getSession(), loginRequestData.username, loginRequestData.password);
+                            responseObject.success = loginApiResult.equals(LoginApiResult.SUCCEED);
+                            responseObject.code = loginApiResult.getNum();
+                            responseObject.message = loginApiResult.getName();
+                            responseObject.version = jsonApiVersion;
+                            break;
+                        default:
+                            responseObject.setApiResult(JsonApiResult.FAILED_INVALID);
+                    }
+                    break;
+                default:
+                    responseObject.setApiResult(JsonApiResult.FAILED_INVALID);
+                    break;
+            }
+        } catch (Exception e) {
+            logger.error(e.toString());
+            responseObject.setApiResult(JsonApiResult.FAILED_INVALID);
+        }
+        return responseObject;
+    }
 
 
     /**
@@ -76,16 +121,20 @@ public class TbAccountService {
         return tbAccount != null;
     }
 
+
     /**
      * 登录，验证用户名和密码是否正确。如果通过验证，将设置accountId到tbAccount对象里面
      *
-     * @param session  当前会话，用于获取会话ID，以及设置session变量
-     * @param username 用户名
+     * @param session      当前会话，用于获取会话ID，以及设置session变量
+     * @param username     用户名
      * @param passwordHash 来自客户端发送来的密码SHA512 HEX值
      * @return 是否通过验证
      */
     public LoginApiResult login(HttpSession session, String username, String passwordHash) {
         LoginApiResult loginApiResult = LoginApiResult.FAILED;
+        if (checkIsLoggedIn(session)){
+            return LoginApiResult.FAILED_ALREADY_LOGINED;
+        }
         //检查两者 是否 非空且合法
         if ((!MyStrIsOK.isEmpty(username)) &&
                 (!MyStrIsOK.isContainAllowedSpecialCharacter(username)) &&
@@ -121,7 +170,7 @@ public class TbAccountService {
         return loginApiResult;
     }
 
-    public LoginApiResult login(HttpSession session, TbAccount tbAccountInDb){
+    public LoginApiResult login(HttpSession session, TbAccount tbAccountInDb) {
         LoginApiResult loginApiResult = LoginApiResult.OTHER_FAILED;
         AccountSession accountSession = new AccountSession();
         accountSession.setSessionId(session.getId());
@@ -208,7 +257,7 @@ public class TbAccountService {
                     tbAccount.setGender(gender);
                     tbAccount.setAccountStatus(TbAccountField.ACCOUNT_STATUS.EMAIL_NOT_ACTIVATED);
                     SentEmailApiResult sentEmailApiResult = emailVerificationService.isUnderSentEmailLimitation(tbAccount);
-                    if(sentEmailApiResult.equals(SentEmailApiResult.SUCCEED)){
+                    if (sentEmailApiResult.equals(SentEmailApiResult.SUCCEED)) {
                         int affectedRowCount = 0;
                         TbAccount tbAccountInDb;
                         try {
@@ -221,25 +270,23 @@ public class TbAccountService {
                         } catch (DataAccessException e) {
                             Throwable cause = e.getCause();
                             if (cause instanceof MySQLIntegrityConstraintViolationException) {
-                                if(callCount == 1){
+                                if (callCount == 1) {
                                     // 对瞬时重复注册情况的处理（有且只有 1 端注册有效）
-                                    RegisterResult registerResult2 = register(session, registerJson, callCount +1);
+                                    RegisterResult registerResult2 = register(session, registerJson, callCount + 1);
                                     registerApiResult = registerResult2.registerApiResult;
-                                }
-                                else {
-                                    logger.error("注册功能 发生了严重的错误！已终止无限递归！请立即排查原因！！error=" + e );
+                                } else {
+                                    logger.error("注册功能 发生了严重的错误！已终止无限递归！请立即排查原因！！error=" + e);
                                     registerApiResult = RegisterApiResult.OTHER_FAILED;
                                 }
                             } else {
-                                logger.error("注册功能 发生了未知错误！请立即排查原因！！error=" + e );
+                                logger.error("注册功能 发生了未知错误！请立即排查原因！！error=" + e);
                                 registerApiResult = RegisterApiResult.OTHER_FAILED;
                             }
                         }
-                    }
-                    else {
-                        if(sentEmailApiResult.equals(SentEmailApiResult.FAILED_FREQUENCY_MAX))
+                    } else {
+                        if (sentEmailApiResult.equals(SentEmailApiResult.FAILED_FREQUENCY_MAX))
                             registerApiResult = RegisterApiResult.FAILED_FREQUENCY_MAX;
-                        else if(sentEmailApiResult.equals(SentEmailApiResult.FAILED_TODAY_MAX))
+                        else if (sentEmailApiResult.equals(SentEmailApiResult.FAILED_TODAY_MAX))
                             registerApiResult = RegisterApiResult.FAILED_TODAY_MAX;
                     }
                 } else {
@@ -253,22 +300,13 @@ public class TbAccountService {
         return registerResult;
     }
 
-    public String generatePasswordHash(String passwordStr, String salt){
-        return DigestUtils.md5Hex(  Hex.encodeHexString( DigestUtils.sha512(passwordStr) )  + salt);
+    public String generatePasswordHash(String passwordStr, String salt) {
+        return DigestUtils.md5Hex(Hex.encodeHexString(DigestUtils.sha512(passwordStr)) + salt);
     }
 
-    public String generatePasswordSalt(){
+    public String generatePasswordSalt() {
         return emailVerificationService.generateEmailVerificationCode(TbAccountField.PASSWORD_SALT_LENGTH);
     }
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -277,7 +315,7 @@ public class TbAccountService {
      * @param email 电子邮箱
      * @return 实例对象
      */
-    public TbAccount userQueryByEmail(String email){
+    public TbAccount userQueryByEmail(String email) {
         return this.tbAccountDao.userQueryByEmail(email);
     }
 
@@ -381,4 +419,5 @@ public class TbAccountService {
     public boolean deleteById(Long accountId) {
         return this.tbAccountDao.deleteById(accountId) == 1;
     }
+
 }

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Product",
+  "description": "基本JSON请求格式",
+  "type": "object",
+  "properties": {
+    "version": {
+      "description": "指定请求的API的版本号",
+      "type": "string"
+    },
+    "operation": {
+      "description": "具体操作",
+      "type": "string"
+    },
+    "data": {
+      "description": "具体操作所需要的数据",
+      "type": "object"
+    }
+  },
+  "required": [
+    "version",
+    "operation",
+    "data"
+  ]
+}

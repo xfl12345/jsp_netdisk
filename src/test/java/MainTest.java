@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.github.xfl12345.jsp_netdisk.StaticSpringApp;
 import com.github.xfl12345.jsp_netdisk.model.helloworld.impl.HelloWorld;
 import com.github.xfl12345.jsp_netdisk.model.service.EmailVerificationService;
-import com.github.xfl12345.jsp_netdisk.model.utils.jdbc.ContextFinalizer;
+import com.github.xfl12345.jsp_netdisk.model.utility.jdbc.ContextFinalizer;
 
 import java.io.File;
 import java.util.Date;

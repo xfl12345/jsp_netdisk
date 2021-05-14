@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JSON API测试</title>
+    <link href="../static/css/login_common.css" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        .energyTextarea[type="text"] {
+            border: 1px solid #00B0FF;
+            border-radius: 15px;
+            background-color: transparent;
+            resize: none;
+            display: block;
+            margin: 0 auto;
+            overflow: hidden;
+            width: 550px;
+            font-size: 14px;
+            height: 18px;
+            line-height: 24px;
+            padding: 2px;
+            outline: 0 none;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(0, 176, 255, 0.6);
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="jsInsertDiv" class="jsInsert" style="border-style: solid">
+</div>
+<br>
+<br>
+<div id="formTable">
+    <div style="text-align: center;">
+        <span>POST相对路径URI</span>
+    </div>
+    <label for="requestURL"></label><input id="requestURL" class="jsInsert energyTextarea" type="text">
+    <br>
+    <br>
+    <div style="text-align: center;">
+        <span>POST内容</span>
+    </div>
+    <label for="requsetInput"></label><textarea id="requsetInput" class="jsInsert energyTextarea"
+                                                type="text"></textarea>
+</div>
+<br>
+<br>
+<div style="text-align: center;">
+    <button id="btn1" class="mySubmitBtn" style="width: auto;"></button>
+</div>
+
+
+</body>
+<script src="../static/js/ajax_util.js"></script>
+<script type="text/javascript">
+    var postApiLocation = "emailVerificationCode";
+
+
+    var formTableId = "formTable";
+    var formTableEle = document.getElementById(formTableId);
+    var btnEleId = "btn1";
+    var btnEle = document.getElementById(btnEleId);
+    var jsInsertDivId = "jsInsertDiv";
+    var jsInsertDivEle = document.getElementById(jsInsertDivId);
+
+    let postForm = function () {
+        let requestURL = "" + formTableEle.getElementsByTagName("input")[0].value;
+        let json_data = "" + formTableEle.getElementsByTagName("textarea")[0].value.replace(/[\r\n]/g,"");
+        json_data = JSON.parse(json_data);
+        console.log(json_data);
+
+        ajax({
+            url: requestURL,
+            type: 'post',
+            data: json_data,
+            dataType: 'json',
+            timeout: 50000,  //5秒超时
+            contentType: "application/json;charset=utf-8",
+            success: function (recvData) {
+                console.log(recvData);
+                jsInsertDivEle.innerText = "" + recvData;
+                    //服务器返回响应，根据响应结果，分析是否登录成功
+                let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
+                let recvDataObj = JSON.parse(recvData);
+                console.log(recvDataObj.success);
+            },
+            //异常处理
+            error: function (e) {
+                console.log(e);
+                jsInsertDivEle.innerText = "请求异常。";
+            },
+            ontimeout: function (event) {
+                console.log(event);
+                jsInsertDivEle.innerText = "请求超时。";
+            }
+        });
+    }
+
+    //code from http://caibaojian.com/textarea-autoheight.html
+    function makeExpandingArea(el) {
+        var timer = null;
+        //由于ie8有溢出堆栈问题，故调整了这里
+        var setStyle = function(el, auto) {
+            if (auto) el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        }
+        var delayedResize = function(el) {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            timer = setTimeout(function() {
+                setStyle(el)
+            }, 200);
+        }
+        if (el.addEventListener) {
+            el.addEventListener('input', function() {
+                setStyle(el, 1);
+            }, false);
+            setStyle(el)
+        } else if (el.attachEvent) {
+            el.attachEvent('onpropertychange', function() {
+                setStyle(el)
+            })
+            setStyle(el)
+        }
+        if (window.VBArray && window.addEventListener) { //IE9
+            el.attachEvent("onkeydown", function() {
+                var key = window.event.keyCode;
+                if (key == 8 || key == 46) delayedResize(el);
+
+            });
+            el.attachEvent("oncut", function() {
+                delayedResize(el);
+            }); //处理粘贴
+        }
+    }
+
+    window.onload = function () {
+        makeExpandingArea(formTableEle.getElementsByTagName("textarea")[0]);
+        let buttonElement = document.getElementById("btn1")
+        buttonElement.innerText = "发送请求";
+        buttonElement.onclick = postForm;
+    }
+
+</script>
+</html>

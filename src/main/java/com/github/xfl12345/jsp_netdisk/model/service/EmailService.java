@@ -1,8 +1,8 @@
 package com.github.xfl12345.jsp_netdisk.model.service;
 
-import com.github.xfl12345.jsp_netdisk.model.utils.MyPropertiesUtils;
-import com.github.xfl12345.jsp_netdisk.model.utils.MyStrIsOK;
-import com.github.xfl12345.jsp_netdisk.model.utils.SimpleMimeMessageBuilder;
+import com.github.xfl12345.jsp_netdisk.model.utility.MyPropertiesUtils;
+import com.github.xfl12345.jsp_netdisk.model.utility.MyStrIsOK;
+import com.github.xfl12345.jsp_netdisk.model.utility.SimpleMimeMessageBuilder;
 import org.apache.ibatis.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

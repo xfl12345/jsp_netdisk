@@ -20,7 +20,7 @@ import static com.github.xfl12345.jsp_netdisk.StaticSpringApp.appInfo;
  * 账号管理 控制对象
  */
 @Controller
-@RequestMapping(value = "user")
+@RequestMapping(value = "account")
 public class AccountController {
 
     /**
