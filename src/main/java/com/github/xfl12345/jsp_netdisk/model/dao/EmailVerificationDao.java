@@ -1,6 +1,5 @@
 package com.github.xfl12345.jsp_netdisk.model.dao;
 
-import com.github.xfl12345.jsp_netdisk.model.pojo.database.AccountFile;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.EmailVerification;
 import org.apache.ibatis.annotations.Param;
 

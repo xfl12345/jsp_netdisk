@@ -1,72 +1,21 @@
 package com.github.xfl12345.jsp_netdisk.model.service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.github.xfl12345.jsp_netdisk.appconst.api.result.FileApiResult;
-import com.github.xfl12345.jsp_netdisk.appconst.field.MySessionAttributes;
 import com.github.xfl12345.jsp_netdisk.model.dao.TbFileDao;
-import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbFile;
-import com.github.xfl12345.jsp_netdisk.model.utility.JsonRequestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Service("tbFileService")
 public class TbFileService {
 
-    private final Logger logger = LoggerFactory.getLogger(TbFileService.class);
-
     @Autowired
     private TbFileDao tbFileDao;
 
-    @Autowired
-    private TbDirectoryService tbDirectoryService;
-
-    @Autowired
-    private DirFileService dirFileService;
-
-    public boolean isValidFileName(String fileName) {
-        if (fileName == null || fileName.length() > 255)
-            return false;
-        else
-            return fileName.matches("[^\\s\\\\/:\\*\\?\\\"<>\\|](\\x20|[^\\s\\\\/:\\*\\?\\\"<>\\|])*[^\\s\\\\/:\\*\\?\\\"<>\\|\\.]$");
+    public TbFile queryByMD5andSHA256(TbFile tbFile){
+        return tbFileDao.queryByMD5andSHA256(tbFile);
     }
-
-
-    public FileApiResult activeEmail(HttpServletRequest request) {
-        TbAccount tbAccount = (TbAccount) request.getSession().getAttribute(MySessionAttributes.TB_ACCOUNT);
-        //只有登录了才可以继续
-        if (tbAccount == null) {
-            return FileApiResult.FAILED_NO_LOGIN;
-        }
-        //格式化请求数据为JSON对象
-        JSONObject requesetJsonObject = null;
-        String code;
-        try {
-            requesetJsonObject = JsonRequestUtils.getJsonObject(request);
-        } catch (Exception e) {
-            return FileApiResult.FAILED_REQUEST_FORMAT_ERROR;
-        }
-        FileApiResult apiResult = FileApiResult.OTHER_FAILED;
-
-        //TODO
-
-
-
-
-
-
-
-
-
-        return apiResult;
-    }
-
-
 
     /**
      * 通过实体作为筛选条件统计
@@ -160,5 +109,4 @@ public class TbFileService {
     public int deleteById(Long fileId) {
         return tbFileDao.deleteById(fileId);
     }
-
 }

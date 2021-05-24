@@ -15,21 +15,25 @@
     <context:component-scan base-package="com.github.xfl12345.jsp_netdisk.model.listener"/>
     <!-- 无限套娃 之 加载所有配置文件的相对路径 -->
     <context:property-placeholder ignore-unresolvable="false" location="classpath:all_properties_path.properties"/>
+    <!-- 无限套娃 之 加载Spring工具类
+         建议把 StaticSpringApp 放到除了监听器之外的所有Bean之前
+         否则将会导致其它Bean的初始化找不到工具类
+          StaticSpringApp 会主动触发Spring IOC容器加载部分Bean -->
+    <bean id="staticSpringApp" class="com.github.xfl12345.jsp_netdisk.StaticSpringApp" lazy-init="false"/>
 
     <!-- 各种工具类 -->
     <!-- 读取properties文件 的 工具类 -->
-    <bean id="myPropertiesUtils" class="com.github.xfl12345.jsp_netdisk.model.utility.MyPropertiesUtils" lazy-init="false"/>
+    <bean id="myPropertiesUtils" class="com.github.xfl12345.jsp_netdisk.model.utility.MyPropertiesUtils"
+          lazy-init="false"/>
     <!-- Java反射机制 的 工具类 -->
     <bean id="myReflectUtils" class="com.github.xfl12345.jsp_netdisk.model.utility.MyReflectUtils" lazy-init="false"/>
     <!-- 检查JSON格式是否符合要求的工具类 -->
-    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.JsonSchemaCheck" id="baseRequestObjectChecker"
-          c:jsonSchemaFilePath="json/schema/base_request_object.json" />
-    <!-- 无限套娃 之 加载Spring工具类 -->
-    <bean id="staticSpringApp" class="com.github.xfl12345.jsp_netdisk.StaticSpringApp" lazy-init="false"/>
+    <bean class="com.github.xfl12345.jsp_netdisk.model.utility.check.JsonSchemaCheck" id="baseRequestObjectChecker"
+          c:jsonSchemaFilePath="json/schema/base_request_object.json"/>
 
     <!-- 各种独立的Properties对象 （其它类的初始化需要用到这个bean，但也只是初始化阶段需要，所以设置成多例模式，避免内存常驻） -->
     <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.MyPropertiesBean" id="app_conf" scope="prototype"
-          c:propertiesFileRelativePath="${app_conf_properties_file_relative_path}" />
+          c:propertiesFileRelativePath="${app_conf_properties_file_relative_path}"/>
 
     <!-- 常量单例 -->
     <!-- APP 常量   -->
@@ -37,13 +41,14 @@
     <!-- APP 版本信息   -->
     <bean class="com.github.xfl12345.jsp_netdisk.appconst.AppInfo" id="appInfo" c:properties-ref="app_conf"/>
     <!-- 邮件未激活的账号的权限模板   -->
-    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.EmailNotActivatedAccountPermission" id="emailNotActivatedPermission"/>
+    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.EmailNotActivatedAccountPermission"
+          id="emailNotActivatedPermission"/>
     <!-- 普通正式会员的账号的权限模板   -->
-    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.NormalAccountPermission" id="normalAccountPermission" />
+    <bean class="com.github.xfl12345.jsp_netdisk.model.pojo.NormalAccountPermission" id="normalAccountPermission"/>
     <!-- 格式化时间为 年-月-日 小时:分钟:秒   -->
-    <bean class="java.text.SimpleDateFormat" id="simpleDateFormat" c:pattern="yyyy-MM-dd HH:mm:ss" />
+    <bean class="java.text.SimpleDateFormat" id="simpleDateFormat" c:pattern="yyyy-MM-dd HH:mm:ss"/>
     <!-- 单独提取时间里的 毫秒（3位数）   -->
-    <bean class="java.text.SimpleDateFormat" id="millisecondFormatter" c:pattern="SSS" />
+    <bean class="java.text.SimpleDateFormat" id="millisecondFormatter" c:pattern="SSS"/>
 
 
     <!-- 各种Listener -->
@@ -55,13 +60,13 @@
           lazy-init="true"/>
     <!--监听session触发事件，实现超时自动注销登录 -->
     <bean id="mySessionEventListener" class="com.github.xfl12345.jsp_netdisk.model.listener.MySessionEventListener"
-          lazy-init="true"/>
-
+          lazy-init="false"/>
 
     <!-- UUID生成器 -->
     <bean id="uuidGenerator" class="com.fasterxml.uuid.Generators"/>
     <!-- 需调用函数才能预加载、完成初始化任务的，都写在里面 -->
     <bean id="preloadSingleton" class="com.github.xfl12345.jsp_netdisk.model.PreLoad" lazy-init="false"/>
+
     <!-- 通过继承PooledDataSource类，对父类进行增强，实现了全自动初始化数据库 -->
     <bean id="dataSource" class="com.github.xfl12345.jsp_netdisk.model.utility.jdbc.MyDataSource" lazy-init="false">
         <constructor-arg index="0" value="${db_init_sql_file_relative_path}"/>
@@ -111,7 +116,7 @@
         <constructor-arg index="0" value="staticVerificationEmail.html"/>
     </bean>
     <!-- 自动扫描service包下的所有类 -->
-    <context:component-scan base-package="com.github.xfl12345.jsp_netdisk.model.service"/>
+    <context:component-scan base-package="com.github.xfl12345.jsp_netdisk.model.service" />
 
     <!-- source code URL=https://blog.csdn.net/qq_34845394/article/details/86351317 -->
     <!-- 在applicationContext.xml中进行配置，使用定时器
@@ -121,7 +126,8 @@
         {秒数} {分钟} {小时} {日期} {月份} {星期} {年份(可为空)}
         cron="0/5 * * * * ?"  //表示五秒钟执行一次
      -->
-    <bean class="com.github.xfl12345.jsp_netdisk.model.service.TaskResetEmailVerificationMap" id="resetEmailVerificationMap" />
+    <bean class="com.github.xfl12345.jsp_netdisk.model.service.TaskResetEmailVerificationMap"
+          id="resetEmailVerificationMap"/>
     <task:scheduled-tasks>
         <!-- 每天凌晨零点过30秒重置 EmailVerificationMap -->
         <task:scheduled ref="resetEmailVerificationMap" method="reset" cron="30 0 0 * * ?"/>

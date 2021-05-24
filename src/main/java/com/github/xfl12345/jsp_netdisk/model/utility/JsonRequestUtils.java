@@ -7,6 +7,7 @@ package com.github.xfl12345.jsp_netdisk.model.utility;
 
 import com.alibaba.fastjson.JSONObject;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -99,22 +100,27 @@ public class JsonRequestUtils {
      *
      * @param request
      * @return : byte[]
-     * @throws IOException
      */
-    public static byte[] getRequestPostBytes(HttpServletRequest request)
-            throws IOException {
+    public static byte[] getRequestPostBytes(HttpServletRequest request) {
         int contentLength = request.getContentLength();
         if (contentLength < 0) {
             return null;
         }
         byte[] buffer = new byte[contentLength];
-        //尝试读取数据，尽量读完整个InputStream
-        for (int i = 0; i < contentLength; ) {
-            int readlen = request.getInputStream().read(buffer, i, contentLength - i);
-            if (readlen == -1) {
-                break;
+        try {
+            ServletInputStream servletInputStream = request.getInputStream();
+            //尝试读取数据，尽量读完整个InputStream
+            for (int i = 0; i < contentLength; ) {
+                int readlen = servletInputStream.read(buffer, i, contentLength - i);
+                if (readlen == -1) {
+                    break;
+                }
+                i += readlen;
             }
-            i += readlen;
+            servletInputStream.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
         return buffer;
     }
@@ -126,7 +132,7 @@ public class JsonRequestUtils {
      */
     public static void responseJsonStr(HttpServletResponse response, JSONObject jsonObject){
         if(response != null){
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType("application/json;charset=utf-8");
             try (PrintWriter out = response.getWriter()){
                 out.append(jsonObject.toJSONString());
             }
@@ -143,7 +149,7 @@ public class JsonRequestUtils {
      */
     public static void responseObjectAsJsonStr(HttpServletResponse response, Object object){
         if(response != null){
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType("application/json;charset=utf-8");
             try (PrintWriter out = response.getWriter()){
                 out.append(   (  (JSONObject) JSONObject.toJSON(object)  ).toJSONString()   );
             }

@@ -12,8 +12,8 @@ public final class EmailNotActivatedAccountPermission extends TbPermission {
         super.setAccountOperation(TbPermissionField.ACCOUNT_OPERATION.NO_PERMISSION);
         super.setAccountInfoOperation(TbPermissionField.ACCOUNT_INFO_OPERATION.SELF_ONLY);
         super.setFileOperation(TbPermissionField.generateFileOperationCode(
-                TbPermissionField.FileOperationElement.NO_PERMISSION,
-                TbPermissionField.FileOperationElement.NO_PERMISSION,
-                TbPermissionField.FileOperationElement.NO_PERMISSION));
+                TbPermissionField.FileOperationPermission.NO_PERMISSION,
+                TbPermissionField.FileOperationPermission.NO_PERMISSION,
+                TbPermissionField.FileOperationPermission.NO_PERMISSION));
     }
 }

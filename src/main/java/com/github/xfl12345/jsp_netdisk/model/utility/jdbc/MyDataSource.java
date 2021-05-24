@@ -66,7 +66,7 @@ public class MyDataSource extends PooledDataSource {
         Resources.setCharset(StandardCharsets.UTF_8); //设置字符集,不然中文乱码插入错误
         runner.setLogWriter(null);//设置是否输出日志
         // 绝对路径读取
-        //Reader read = new FileReader(new File("f:\\test.sql"));
+        //Reader read = new FileReader(new FileOperation("f:\\test.sql"));
         // 从class目录下直接读取
         //System.setProperty("console.encoding", "UTF-8");
         //logger.debug(Thread.currentThread().getContextClassLoader().getResource("").getPath());

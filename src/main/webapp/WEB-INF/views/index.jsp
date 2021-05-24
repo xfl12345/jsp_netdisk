@@ -14,7 +14,7 @@
     <link href="<%=request.getContextPath() %>/static/css/login_common.css" rel="stylesheet" type="text/css"/>
     <link href="<%=request.getContextPath() %>/static/css/login_special_use.css" rel="stylesheet" type="text/css"/>
 </head>
-<body background="<%=request.getContextPath() %>/static/pic/yourname_dusk.jpg">
+<body background="<%=request.getContextPath() %>/static/images/yourname_dusk.jpg">
 
 <div id="div1" class="makeDivCenterParent">
     <div id="div2" class="broaderBreath">

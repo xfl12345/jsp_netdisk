@@ -5,14 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.xfl12345.jsp_netdisk.appconst.api.result.EmailVerificationApiResult;
 import com.github.xfl12345.jsp_netdisk.appconst.api.result.SentEmailApiResult;
 import com.github.xfl12345.jsp_netdisk.appconst.api.request.EmailVerificationRequestField;
-import com.github.xfl12345.jsp_netdisk.appconst.field.MySessionAttributes;
-import com.github.xfl12345.jsp_netdisk.appconst.field.TbAccountField;
+import com.github.xfl12345.jsp_netdisk.appconst.field.*;
 import com.github.xfl12345.jsp_netdisk.model.dao.EmailVerificationDao;
 import com.github.xfl12345.jsp_netdisk.model.pojo.EmailVerificationLogWithLock;
-import com.github.xfl12345.jsp_netdisk.model.pojo.database.EmailVerification;
-import com.github.xfl12345.jsp_netdisk.model.pojo.database.EmailVerificationLog;
-import com.github.xfl12345.jsp_netdisk.model.pojo.database.EmailVerificationLogItem;
-import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount;
+import com.github.xfl12345.jsp_netdisk.model.pojo.database.*;
 import com.github.xfl12345.jsp_netdisk.model.pojo.result.EmailVerificationLogResult;
 import com.github.xfl12345.jsp_netdisk.model.utility.JsonRequestUtils;
 import com.github.xfl12345.jsp_netdisk.model.utility.MyStrIsOK;
@@ -27,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.github.xfl12345.jsp_netdisk.StaticSpringApp;
-import com.github.xfl12345.jsp_netdisk.appconst.field.VerificationEmailHtmlIdField;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -39,10 +34,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.github.xfl12345.jsp_netdisk.StaticSpringApp.appInfo;
@@ -59,6 +51,12 @@ public class EmailVerificationService implements IEmailSentCallback {
 
     private final Logger logger = LoggerFactory.getLogger(EmailVerificationService.class);
 
+    @Autowired
+    private EmailVerificationDao emailVerificationDao;
+
+    @Autowired
+    private FileService fileService;
+
     /**
      * service 套 service，老套娃了
      */
@@ -66,10 +64,10 @@ public class EmailVerificationService implements IEmailSentCallback {
     private EmailService emailService;
 
     @Autowired
-    private EmailVerificationDao emailVerificationDao;
+    private AccountService accountService;
 
     @Autowired
-    private TbAccountService tbAccountService;
+    private TbDirectoryService tbDirectoryService;
 
     public final ConcurrentHashMap<String, EmailVerificationLogWithLock> emailVerificationMap = new ConcurrentHashMap<>();
 
@@ -136,6 +134,7 @@ public class EmailVerificationService implements IEmailSentCallback {
             logItem.username = tbAccount.getUsername();
             logItem.emailVerificationCode = emailVerificationCode;
             logWithLock.items.add(logItem);
+            logger.info("验证码 "+ emailVerificationCode + " 发给 " + email + " 已入队。" );
             //添加 验证码 到set
             logWithLock.emailVerificationCodeSet.add(emailVerificationCode);
             //插入logItem的操作完成，解锁，允许其它所有读写操作
@@ -210,12 +209,14 @@ public class EmailVerificationService implements IEmailSentCallback {
                 Address address =  message.getRecipients(Message.RecipientType.TO)[0];
                 //提纯，获取收件人邮箱地址
                 String mail2address = emailService.getRecipientEmailAddress(address);
-                if (result) {
-                    logger.info("发送验证码邮件给" + address + "已成功！");
-                } else {
-                    logger.error("发送验证码邮件给" + address + "失败！原因：" + causeDetail);
-                }
                 logAfterSent(mail2address, generateEmailVerificationLogItem(message, result));
+                TreeSet<String> codeSet = getCode(mail2address);
+                String code = codeSet.pollFirst();
+                if (result) {
+                    logger.info("发送邮箱验证码 "+ code +" 给" + address + "已成功！");
+                } else {
+                    logger.error("发送邮箱验证码 "+ code +" 给" + address + "失败！原因：" + causeDetail);
+                }
 //                    int affectedRowCount = 0;
 //                    try {
 //                        affectedRowCount = this.emailVerificationDao.insert(emailVerificationNewLine);
@@ -274,9 +275,13 @@ public class EmailVerificationService implements IEmailSentCallback {
                 if( currDate.getTime() - item.sentDate.getTime() < getSentEmailMaxFrequencyPeerMillinseconds ){
                     sentEmailApiResult = SentEmailApiResult.SUCCEED;
                 }
-                sentEmailApiResult = SentEmailApiResult.FAILED_FREQUENCY_MAX;
+                else {
+                    sentEmailApiResult = SentEmailApiResult.FAILED_FREQUENCY_MAX;
+                }
             }
-            sentEmailApiResult = SentEmailApiResult.FAILED_TODAY_MAX;
+            else {
+                sentEmailApiResult = SentEmailApiResult.FAILED_TODAY_MAX;
+            }
         }
         logWithLock.readLock.unlock();
         return sentEmailApiResult;
@@ -462,14 +467,24 @@ public class EmailVerificationService implements IEmailSentCallback {
             TbAccount activeAccount = new TbAccount();
             activeAccount.setAccountId(tbAccount.getAccountId());
             activeAccount.setAccountStatus(TbAccountField.ACCOUNT_STATUS.NORMAL);
+            //为新注册用户新建一个根目录
+            TbDirectory insertDir = new TbDirectory();
+            insertDir.setAccountId(tbAccount.getAccountId());
+            insertDir.setDirectoryName(tbAccount.getAccountId().toString());
+            insertDir.setParentDirectoryId(TbDirectoryField.DIRECTORY_ID.data.user.id);
+            if(tbDirectoryService.queryAll(insertDir).size() == 0)
+                tbDirectoryService.insert(insertDir);
+            Long directoryId =  tbDirectoryService.getId(insertDir);
+            activeAccount.setRootDirectoryId(directoryId);
+            //修改用户权限为正式会员
+            activeAccount.setPermissionId(TbPermissionField.PERMISSION_ID.NORMAL_ACCOUNT);
             int affectedRowCount = 0;
             try {
-                affectedRowCount = tbAccountService.update(activeAccount);
+                affectedRowCount = accountService.update(activeAccount);
                 //当且仅当成功修改到数据库账号信息，才算完成邮箱验证
                 if(affectedRowCount == 1) {
-                    tbAccount.setAccountStatus(TbAccountField.ACCOUNT_STATUS.NORMAL);
-                    request.getSession().setAttribute(MySessionAttributes.TB_ACCOUNT, tbAccount);
-                    logger.error("账号："+ tbAccount.getAccountId()
+
+                    logger.info("账号："+ tbAccount.getAccountId()
                             +"，用户名：" + tbAccount.getUsername()
                             +"，邮箱：" + tbAccount.getEmail() + "，已激活！");
                     apiResult = EmailVerificationApiResult.SUCCEED;
@@ -494,6 +509,24 @@ public class EmailVerificationService implements IEmailSentCallback {
         //邮件都没发过，肯定无效 & 先看看验证码是否存在
         if( logWithLock == null || ! logWithLock.emailVerificationCodeSet.contains(code) )
             return apiResult;
+        TreeSet<String> set = getCode(email);
+        for (String codeItem : set) {
+            if (codeItem.equals(code)) {
+                //验证码匹配，验证有效
+                apiResult = EmailVerificationApiResult.SUCCEED;
+                break;
+            }
+        }
+        return apiResult;
+    }
+
+    public TreeSet<String> getCode(String email){
+        //从内存里高速获取 发邮箱验证码 的历史
+        EmailVerificationLogWithLock logWithLock = emailVerificationMap.get(email);
+        TreeSet<String> code = new TreeSet<>();
+        //邮件都没发过，肯定无效
+        if( logWithLock == null )
+            return code;
         //高并发，获取锁，保证一致性读
         logWithLock.readLock.lock();
         ArrayList<EmailVerificationLogItem> items = logWithLock.items;
@@ -506,11 +539,7 @@ public class EmailVerificationService implements IEmailSentCallback {
             item = items.get(i);
             //对比间隔时间是否超过有效时间
             if (currDate.getTime() - item.sentDate.getTime() < codeVaildTimeInMilliseconds) {
-                if( item.emailVerificationCode.equals(code) ){
-                    //验证码匹配，验证有效
-                    apiResult = EmailVerificationApiResult.SUCCEED;
-                    break;
-                }
+                code.add(item.emailVerificationCode);
             }
             if( i > 0 )
                 i--;
@@ -519,9 +548,8 @@ public class EmailVerificationService implements IEmailSentCallback {
         }
         //有始有终，解锁
         logWithLock.readLock.unlock();
-        return apiResult;
+        return code;
     }
-
 
 
 

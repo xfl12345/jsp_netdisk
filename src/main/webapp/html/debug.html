@@ -79,7 +79,7 @@
             success: function (recvData) {
                 console.log(recvData);
                 jsInsertDivEle.innerText = "" + recvData;
-                    //服务器返回响应，根据响应结果，分析是否登录成功
+                    //服务器返回响应，根据响应结果，分析是否请求成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj = JSON.parse(recvData);
                 console.log(recvDataObj.success);

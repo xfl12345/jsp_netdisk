@@ -7,15 +7,18 @@ import com.github.xfl12345.jsp_netdisk.appconst.api.result.*;
 import com.github.xfl12345.jsp_netdisk.appconst.MyConst;
 import com.github.xfl12345.jsp_netdisk.appconst.api.request.JsonApiRequestField;
 import com.github.xfl12345.jsp_netdisk.appconst.api.request.RegisterRequestField;
+import com.github.xfl12345.jsp_netdisk.appconst.field.AccountOperationField;
 import com.github.xfl12345.jsp_netdisk.appconst.field.MySessionAttributes;
 import com.github.xfl12345.jsp_netdisk.appconst.field.TbAccountField;
+import com.github.xfl12345.jsp_netdisk.appconst.field.TbDirectoryField;
 import com.github.xfl12345.jsp_netdisk.model.dao.AccountSessionDao;
 import com.github.xfl12345.jsp_netdisk.model.dao.TbAccountDao;
 import com.github.xfl12345.jsp_netdisk.model.pojo.api.request.BaseRequestObject;
-import com.github.xfl12345.jsp_netdisk.model.pojo.api.request.LoginRequestData;
+import com.github.xfl12345.jsp_netdisk.model.pojo.api.request.payload.LoginRequestData;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.AccountSession;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount;
 import com.github.xfl12345.jsp_netdisk.model.pojo.api.response.JsonCommonApiResponseObject;
+import com.github.xfl12345.jsp_netdisk.model.pojo.result.DirectoryView;
 import com.github.xfl12345.jsp_netdisk.model.pojo.result.RegisterResult;
 import com.github.xfl12345.jsp_netdisk.model.service.api.JsonCommonApiCall;
 import com.github.xfl12345.jsp_netdisk.model.utility.MyStrIsOK;
@@ -35,6 +38,8 @@ import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
+import static com.github.xfl12345.jsp_netdisk.StaticSpringApp.myConst;
+
 
 /**
  * (TbAccount)表服务实现类
@@ -43,9 +48,9 @@ import java.util.List;
  * @since 2021-04-19 16:00:51
  */
 @Service("tbAccountService")
-public class TbAccountService implements JsonCommonApiCall {
+public class AccountService implements JsonCommonApiCall {
 
-    private final Logger logger = LoggerFactory.getLogger(TbAccountService.class);
+    private final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
     private TbAccountDao tbAccountDao;
@@ -59,7 +64,11 @@ public class TbAccountService implements JsonCommonApiCall {
     @Autowired
     private EmailVerificationService emailVerificationService;
 
+    @Autowired
+    private FileService fileService;
+
     public static final String jsonApiVersion = "1";
+
 
     /**
      * 检查完JSON数据结构是否合法之后，调用具体的业务函数
@@ -76,12 +85,19 @@ public class TbAccountService implements JsonCommonApiCall {
                     //选择操作
                     switch (baseRequestObject.operation) {
                         //登录
-                        case JsonApiRequestField.Account.login:
+                        case AccountOperationField.login:
                             LoginRequestData loginRequestData = baseRequestObject.data.toJavaObject(LoginRequestData.class);
                             LoginApiResult loginApiResult = login(request.getSession(), loginRequestData.username, loginRequestData.password);
                             responseObject.success = loginApiResult.equals(LoginApiResult.SUCCEED);
                             responseObject.code = loginApiResult.getNum();
                             responseObject.message = loginApiResult.getName();
+                            responseObject.version = jsonApiVersion;
+                            break;
+                        case AccountOperationField.logout:
+                            LogoutApiResult logoutApiResult = logout(request.getSession());
+                            responseObject.success = logoutApiResult.equals(LogoutApiResult.SUCCEED);
+                            responseObject.code = logoutApiResult.getNum();
+                            responseObject.message = logoutApiResult.getName();
                             responseObject.version = jsonApiVersion;
                             break;
                         default:
@@ -118,7 +134,16 @@ public class TbAccountService implements JsonCommonApiCall {
      */
     public boolean checkIsLoggedIn(HttpSession session) {
         TbAccount tbAccount = (TbAccount) session.getAttribute(MySessionAttributes.TB_ACCOUNT);
-        return tbAccount != null;
+        if(tbAccount != null){
+            AccountSession accountSession = accountSessionDao.queryByAccountId(tbAccount.getAccountId());
+            if(accountSession == null || ! accountSession.getSessionId().equals(session.getId())){
+                session.invalidate();
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -136,8 +161,7 @@ public class TbAccountService implements JsonCommonApiCall {
             return LoginApiResult.FAILED_ALREADY_LOGINED;
         }
         //检查两者 是否 非空且合法
-        if ((!MyStrIsOK.isEmpty(username)) &&
-                (!MyStrIsOK.isContainAllowedSpecialCharacter(username)) &&
+        if ( RegisterFieldChecker.isUsernameUnderLegal(username) &&
                 MyStrIsOK.isLetterDigitOnly(passwordHash) &&
                 username.length() <= TbAccountField.USERNAME_MAX_LENGTH &&
                 passwordHash.length() == MyConst.SHA_512_HEX_STR_LENGTH) {
@@ -149,7 +173,7 @@ public class TbAccountService implements JsonCommonApiCall {
             //默认前端已对密码文本已完成SHA512哈希值计算。这行补全完整的单向加密。这样，哪怕被拖库，也可以保证密码安全。
             byte[] passwordHashFromRequest = DigestUtils.md5(passwordHash + tbAccountInDb.getPasswordSalt());
             //对比密码哈希值是否一致，使用 时间定长 的比较方法，防止试探性攻击。
-            byte[] passwordHashFromDatabase = new byte[1];
+            byte[] passwordHashFromDatabase;
             boolean passwordCorrect = false;
             try {
                 passwordHashFromDatabase = Hex.decodeHex(tbAccountInDb.getPasswordHash());
@@ -163,7 +187,7 @@ public class TbAccountService implements JsonCommonApiCall {
                 e.printStackTrace();
                 logger.error("数据库密码格式错误，从16进制字符 转码 到二进制失败！");
             }
-            if (passwordCorrect) {
+            if (passwordCorrect) {//密码正确，执行插入数据库操作。
                 loginApiResult = login(session, tbAccountInDb);
             }
         }
@@ -177,16 +201,17 @@ public class TbAccountService implements JsonCommonApiCall {
         accountSession.setAccountId(tbAccountInDb.getAccountId());
         int affectedRowCount = 0;
         try {
-            affectedRowCount = this.accountSessionDao.insert(accountSession);
+            affectedRowCount = accountSessionDao.insert(accountSession);
             session.setAttribute(MySessionAttributes.TB_ACCOUNT, tbAccountInDb);
+            DirectoryView currDirView = fileService.getDirectoryView(tbAccountInDb.getRootDirectoryId());
+            session.setAttribute(MySessionAttributes.CURRENT_WORK_DIRECTOR, currDirView);
             loginApiResult = LoginApiResult.SUCCEED;
         } catch (DataAccessException e) {
             Throwable cause = e.getCause();
             if (cause instanceof MySQLIntegrityConstraintViolationException) {
                 loginApiResult = LoginApiResult.DUPLICATE_KEY;
-            } else {
-                loginApiResult = LoginApiResult.OTHER_FAILED;
             }
+            logger.warn(e.toString());
         }
         return loginApiResult;
     }
@@ -253,6 +278,7 @@ public class TbAccountService implements JsonCommonApiCall {
                     tbAccount.setPermissionId(tbPermissionService.gePermissionIdOfEmailNotActivatedAccount());
                     tbAccount.setRegisterTime(currDate);
                     tbAccount.setRegisterTimeInMs(Integer.valueOf(currMillisecond));
+                    tbAccount.setRootDirectoryId(TbDirectoryField.DIRECTORY_ID.blackhouse.id);
                     tbAccount.setEmail(email);
                     tbAccount.setGender(gender);
                     tbAccount.setAccountStatus(TbAccountField.ACCOUNT_STATUS.EMAIL_NOT_ACTIVATED);
@@ -260,8 +286,8 @@ public class TbAccountService implements JsonCommonApiCall {
                     if (sentEmailApiResult.equals(SentEmailApiResult.SUCCEED)) {
                         int affectedRowCount = 0;
                         TbAccount tbAccountInDb;
-                        try {
-                            affectedRowCount = insert(tbAccount); //注册并获取账号ID
+                        try {//注册并获取账号ID
+                            affectedRowCount = insert(tbAccount);
                             tbAccountInDb = userQueryByEmail(tbAccount.getEmail());
                             registerResult.tbAccount = tbAccountInDb;
                             login(session, tbAccountInDb);
@@ -401,13 +427,29 @@ public class TbAccountService implements JsonCommonApiCall {
     }
 
     /**
-     * 修改数据
+     * 根据账号ID，修改账号数据
+     * 更新成功后，同步更新当前账号的session对象
      *
      * @param tbAccount 实例对象
      * @return 实例对象
      */
-    public int update(TbAccount tbAccount) {
-        return this.tbAccountDao.update(tbAccount);
+    public synchronized int update(TbAccount tbAccount) {
+        int affectedRow = this.tbAccountDao.update(tbAccount);
+        TbAccount updatedTbAccount = this.tbAccountDao.queryById(tbAccount.getAccountId());
+        AccountSession accountSession = accountSessionDao.queryByAccountId(tbAccount.getAccountId());
+        if(accountSession != null){
+            HttpSession session = StaticSpringApp.getSessionById(accountSession.getSessionId());
+            if(session != null){
+                try {
+                    session.setAttribute(MySessionAttributes.TB_ACCOUNT, updatedTbAccount);
+                }
+                catch (Exception e){
+                    logger.error("更新账号 "+ tbAccount.getAccountId()
+                            + " 完成后，同步更新session对象失败！error=" + e);
+                }
+            }
+        }
+        return affectedRow;
     }
 
     /**

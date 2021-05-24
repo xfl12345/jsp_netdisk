@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="zh" class="cye-disabled cye-nm">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <title>用户空间</title>
+
+    <!-- 引入 http-vue-loader -->
+    <script src="https://unpkg.com/http-vue-loader"></script>
+
+    <style ref="stylesheet">
+        html,
+        body,
+        #app {
+            height: 100%;
+            margin: 0;
+            padding: 0
+        }
+
+        .chromeframe {
+            margin: .2em 0;
+            background: #ccc;
+            color: #000;
+            padding: .2em 0
+        }
+
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999999
+        }
+
+        #loader {
+            display: block;
+            position: relative;
+            left: 50%;
+            top: 50%;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #FFF;
+            -webkit-animation: spin 2s linear infinite;
+            -ms-animation: spin 2s linear infinite;
+            -moz-animation: spin 2s linear infinite;
+            -o-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            z-index: 1001
+        }
+
+        #loader:before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #FFF;
+            -webkit-animation: spin 3s linear infinite;
+            -moz-animation: spin 3s linear infinite;
+            -o-animation: spin 3s linear infinite;
+            -ms-animation: spin 3s linear infinite;
+            animation: spin 3s linear infinite
+        }
+
+        #loader:after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #FFF;
+            -moz-animation: spin 1.5s linear infinite;
+            -o-animation: spin 1.5s linear infinite;
+            -ms-animation: spin 1.5s linear infinite;
+            -webkit-animation: spin 1.5s linear infinite;
+            animation: spin 1.5s linear infinite
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                -ms-transform: rotate(0deg);
+                transform: rotate(0deg)
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                -ms-transform: rotate(360deg);
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                -ms-transform: rotate(0deg);
+                transform: rotate(0deg)
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                -ms-transform: rotate(360deg);
+                transform: rotate(360deg)
+            }
+        }
+
+        #loader-wrapper .loader-section {
+            position: fixed;
+            top: 0;
+            width: 51%;
+            height: 100%;
+            background: #7171c6;
+            z-index: 1000;
+            -webkit-transform: translateX(0);
+            -ms-transform: translateX(0);
+            transform: translateX(0)
+        }
+
+        #loader-wrapper .loader-section.section-left {
+            left: 0
+        }
+
+        #loader-wrapper .loader-section.section-right {
+            right: 0
+        }
+
+        .loaded #loader-wrapper .loader-section.section-left {
+            -webkit-transform: translateX(-100%);
+            -ms-transform: translateX(-100%);
+            transform: translateX(-100%);
+            -webkit-transition: all .7s .3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            transition: all .7s .3s cubic-bezier(0.645, 0.045, 0.355, 1.000)
+        }
+
+        .loaded #loader-wrapper .loader-section.section-right {
+            -webkit-transform: translateX(100%);
+            -ms-transform: translateX(100%);
+            transform: translateX(100%);
+            -webkit-transition: all .7s .3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            transition: all .7s .3s cubic-bezier(0.645, 0.045, 0.355, 1.000)
+        }
+
+        .loaded #loader {
+            opacity: 0;
+            -webkit-transition: all .3s ease-out;
+            transition: all .3s ease-out
+        }
+
+        .loaded #loader-wrapper {
+            visibility: hidden;
+            -webkit-transform: translateY(-100%);
+            -ms-transform: translateY(-100%);
+            transform: translateY(-100%);
+            -webkit-transition: all .3s 1s ease-out;
+            transition: all .3s 1s ease-out
+        }
+
+        .no-js #loader-wrapper {
+            display: none
+        }
+
+        .no-js h1 {
+            color: #222
+        }
+
+        #loader-wrapper .load_title {
+            font-family: 'Open Sans';
+            color: #FFF;
+            font-size: 19px;
+            width: 100%;
+            text-align: center;
+            z-index: 9999999999999;
+            position: absolute;
+            top: 60%;
+            opacity: 1;
+            line-height: 30px
+        }
+
+        #loader-wrapper .load_title span {
+            font-weight: normal;
+            font-style: italic;
+            font-size: 13px;
+            color: #FFF;
+            opacity: .5
+        }
+    </style>
+    <link href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet" type="text/css">
+    <!--    <link href="https://cdn.jsdelivr.net/npm/element-ui@2.13.2/lib/theme-chalk/index.css" rel="preload" as="style">-->
+    <!--    <link href="https://cdn.jsdelivr.net/npm/element-ui@2.13.2/lib/theme-chalk/index.css" rel="stylesheet">-->
+    <!--    <link href="../static/css/manifest.c438a926.css" rel="prefetch">-->
+    <!--    <link href="../static/css/app.8db53a0b.css" rel="preload" as="style">-->
+    <!--    <link href="../static/css/styles.1c02be35.css" rel="preload" as="style">-->
+    <!--    <link href="../static/css/vendor.d24d513a.css" rel="preload" as="style">-->
+
+    <!--    <link href="../static/css/vendor.d24d513a.css" rel="stylesheet">-->
+    <link href="../static/css/styles.1c02be35.css" rel="stylesheet">
+    <!--    <link href="../static/css/app.8db53a0b.css" rel="stylesheet">-->
+    <link href="../static/css/manifest.c438a926.css" rel="stylesheet" type="text/css">
+
+    <style id="nightModeStyle">
+        html.cye-enabled.cye-nm:not(*:-webkit-full-screen) body,
+        html.cye-enabled.cye-nm:not(*:-webkit-full-screen) #cye-workaround-body {
+            -webkit-filter: contrast(91%) brightness(84%) invert(1);
+        }
+    </style>
+    <style id="cyebody">
+        html.cye-enabled.cye-lm body {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+    </style>
+    <style id="cyediv">
+        html.cye-enabled.cye-lm div {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+    </style>
+    <style id="cyetable">
+        html.cye-enabled.cye-lm th {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+
+        html.cye-enabled.cye-lm td {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+    </style>
+    <style id="cyetextInput">
+        html.cye-enabled.cye-lm input[type=text] {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+
+        html.cye-enabled.cye-lm textarea {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+    </style>
+    <style id="cyeselect">
+        html.cye-enabled.cye-lm select {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+    </style>
+    <style id="cyeul">
+        html.cye-enabled.cye-lm ul {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+    </style>
+    <style id="cyeChangeByClick">
+        html.cye-enabled.cye-lm .cye-lm-tag,
+        html.cye-enabled.cye-lm.cye-lm-tag {
+            background-color: #cce8cf !important;
+            border-color: rgb(51, 58, 51) !important;
+            background-image: none !important;
+        }
+    </style>
+
+    <!-- app 调味 自定义Style -->
+    <style>
+        .el-main {
+            height: 100%
+        }
+
+        .el-header, .el-main {
+            padding: 0 !important
+        }
+
+        .el-aside {
+            border-right: 1px solid #e6e6e6 !important
+        }
+
+        .aside {
+            min-height: -webkit-calc(100vh - 60px);
+            min-height: calc(100vh - 60px)
+        }
+    </style>
+    <!-- 头像Vue 自定义Style -->
+    <style>
+        .headerWrapper {
+            width: 100%;
+            padding: 0 20px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            height: 50px;
+            line-height: 50px;
+            background-color: #4AB7BD;
+        }
+
+        .header-right {
+            float: right;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .user {
+            cursor: pointer;
+        }
+
+        .avatar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            margin: auto 20px;
+            width: 100px;
+        }
+
+        .user-name {
+            margin-left: 10px;
+        }
+
+    </style>
+    <!-- 路径面包屑Vue 自定义Style -->
+    <style>
+        .breadcrumb-wrapper {
+            padding: 0 20px;
+            height: 16px;
+            line-height: 16px;
+            display: flex;
+            color: #3b8cff;
+            font-size: 12px;
+            font-weight: 500 !important;
+        }
+
+        .breadcrumb-wrapper,
+        >>> .el-breadcrumb {
+            height: 16px;
+            line-height: 16px;
+            font-size: 12px;
+            font-weight: 500 !important;
+        }
+    </style>
+
+    <!-- 工具栏Vue 自定义Style -->
+    <style>
+        .operation-menu-wrapper {
+            height: 60px;
+            line-height: 60px;
+            display: block;
+        }
+
+        .upload-demo {
+            display: inline-block;
+        }
+
+        .new-dir {
+        }
+
+        .operation-buttons {
+            margin-left: 20px;
+        }
+
+        .search {
+            float: right;
+            display: inline-block;
+        }
+
+        .image-model {
+            margin-left: 10px;
+            float: right;
+            display: inline-block;
+        }
+
+        .image-model a {
+            display: inline-block;
+            cursor: pointer;
+            font-size: 20px;
+        }
+    </style>
+
+    <!-- 文件视图Vue 自定义Style -->
+    <style>
+        .table {
+            width: calc(100%);
+        }
+
+        .dataTable {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+<div>
+    <section class="el-container is-vertical">
+        <header id="myHeaderWrapper" class="el-header" style="height: 60px;">
+            <template>
+                <div class="headerWrapper">
+                    <div class="header-right">
+                        <!--右侧下拉框-->
+                        <el-dropdown @command="handleCommand">
+                            <div class="avatar user">
+                                <div>
+                                    <small v-text="userName" class="user-name">VUE</small>
+                                </div>
+                            </div>
+                            <!-- 用户名下拉菜单 -->
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="profile" icon="fa fa-user">个人中心</el-dropdown-item>
+                                <el-dropdown-item command="logout" icon="fa fa-sign-out" divided>退出登录</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                </div>
+            </template>
+        </header>
+
+
+        <section class="el-container">
+            <main class="el-main">
+                <div class="tableWrapper mainContent">
+                    <!-- ElementUI 工具栏UI组件 -->
+                    <div id="myOperationMenuWrapper" class="operation-menu-wrapper">
+                        <template>
+                            <el-button-group class="operation-buttons">
+                                <el-upload
+                                        class="upload-demo"
+                                        :show-file-list="false"
+                                        name="file"
+                                        :action="action"
+                                        :on-success="uploadSuccess"
+                                        :on-error="uploadSuccess"
+                                        :before-upload="beforeUpload">
+                                    <el-button type="primary"
+                                               size="small"
+                                               icon="el-icon-upload2">上传</el-button>
+                                </el-upload>
+                            </el-button-group>
+                            <el-button-group class="operation-buttons">
+                                <el-button class="new-dir" size="small" @click="newDir" icon="el-icon-folder-add">
+                                    新建文件夹
+                                </el-button>
+                            </el-button-group>
+                            <el-button-group class="operation-buttons">
+                                <el-button plain size="small" icon="el-icon-download" :disabled="!isDownload"
+                                           @click="downLoad">下载
+                                </el-button>
+                                <el-button plain size="small" @click="deleteSelectedItem" :disabled="!isDelete"
+                                           icon="el-icon-delete">删除
+                                </el-button>
+                                <el-button plain size="small" @click="rename" :disabled="!isReName">重命名</el-button>
+                                <el-button plain size="small" :disabled="!isCopy" @click="copyTo">复制到</el-button>
+                                <el-button plain size="small" @click="moveTo" :disabled="!isMove">移动到</el-button>
+                            </el-button-group>
+                            <!--
+                            <el-button-group class="operation-buttons">
+                                <el-button class="decompression" :disabled="!decompression" @click="unzip" size="small">
+                                    解压
+                                </el-button>
+                                <el-button class="compress" :disabled="!compress" size="small">压缩</el-button>
+                            </el-button-group>
+                            <div class="image-model">
+                                <a><i class="el-icon-menu"></i></a>
+                            </div>
+                            -->
+                            <div class="search">
+                                <el-input v-model="search" placeholder="搜索您的文件" clearable size="small"
+                                          @keyup.enter.native="searchFileByName"
+                                          @clear="searchFileByName"
+                                          suffix-icon="el-icon-search"></el-input>
+                            </div>
+                            <el-dialog
+                                    title="文件移动到"
+                                    :visible.sync="dialogVisible"
+                                    width="30%">
+                                <el-tree
+                                        :data="dirData"
+                                        :props="defaultProps"
+                                        accordion
+                                        ref="moveTree"
+                                        highlight-current
+                                        @node-click="selectNodeClick"
+                                        :expand-on-click-node="false"
+                                        node-key="id">
+                                    <span slot-scope="{data}">
+                                        <img :src="dir" width="22px" alt="">
+                                        <span> {{data.label}}</span>
+                                    </span>
+                                </el-tree>
+                                <span slot="footer" class="dialog-footer">
+                                    <el-button @click="close">取 消</el-button>
+                                    <el-button type="primary" @click="submit">确 定</el-button>
+                                </span>
+                            </el-dialog>
+                        </template>
+                    </div>
+                    <!-- ElementUI 面包屑UI组件 -->
+                    <div id="myBreadcrumbWrapper">
+                        <template>
+                            <div class="breadcrumb-wrapper">
+                                <el-breadcrumb separator="/">
+                                    <el-breadcrumb-item
+                                            v-for="(item,index) in breadCrumbList">
+                                        <a v-on:click="setCurrPath( index )">{{ item }}</a>
+                                    </el-breadcrumb-item>
+                                </el-breadcrumb>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- ElementUI 文件列表UI组件 -->
+                    <div id="fileTable">
+                        <el-scrollbar :native="false" tag="section" :noresize="false">
+                            <el-table class="dataTable"
+                                      :data="fileList"
+                                      width="100%"
+                                      ref="multipleTable"
+                                      stripe
+                                      fit
+                                      tooltip-effect="dark"
+                                      element-loading-text="数据加载中"
+                                      @selection-change="selectionChange">
+                                <el-table-column
+                                        type="selection"
+                                        fixed
+                                        width="55">
+                                </el-table-column>
+                                <el-table-column prop="isDir" width="60">
+                                    <template slot-scope="scope">
+                                        <img :src="setFileImg(scope.row.extendName)"
+                                             style="width: 30px;" alt=""/>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        fit
+                                        prop="userCustomName"
+                                        show-overflow-tooltip
+                                        label="文件名">
+                                    <template slot-scope="scope">
+                                        <div style="cursor:pointer;" @click="clickFileName(scope.row)">
+                                            <span>{{scope.row.userCustomName}}</span>
+                                        </div>
+                                    </template>
+
+                                </el-table-column>
+                                <el-table-column
+                                        fit
+                                        prop="extendName"
+                                        show-overflow-tooltip
+                                        label="类型">
+                                    <template slot-scope="scope">
+                                        <span v-if="!scope.row.isDir">{{scope.row.extendName}}</span>
+                                        <span v-else>文件夹</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="大小"
+                                        width="80"
+                                        prop="fileSize"
+                                        show-overflow-tooltip
+                                        align="right">
+                                    <template slot-scope="scope">
+                                        <div>
+                                            {{calculateSize(scope.row.fileSize)}}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-scrollbar>
+                    </div>
+
+                </div>
+            </main>
+        </section>
+    </section>
+</div>
+
+</body>
+<!--<script data-main="app" src="https://raw.githack.com/edgardleal/require-vuejs/master/dist/require-vuejs.js" ></script>-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="../static/js/hashes.js"></script>
+<script src="../static/js/ajax_util.js"></script>
+<!--<script data-main="app" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.js" ></script>-->
+
+<!-- 通用函数 -->
+<script type="text/javascript">
+
+    // 获取文件后缀名
+    var getFileExtendName = function (name) {
+        name = "" + name;
+        return name.substring(name.lastIndexOf(".") + 1)
+    }
+
+    //通用同步JSON API请求函数
+    var commonJsonRequest = function (request_object) {
+        let response_json = null;
+        let syncAjax = new AjaxSync({
+            url: "../api/json",
+            type: 'post',
+            data: request_object,
+            dataType: 'json',
+            timeout: 50000,  //5秒超时
+            contentType: "application/json;charset=utf-8",
+            success: function (recvData) {
+                console.log(recvData);
+                //服务器返回响应，根据响应结果，分析是否请求成功
+                let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
+                let recvDataObj = JSON.parse(recvData);
+                console.log(recvDataObj.success);
+                response_json = recvDataObj;
+            },
+            //异常处理
+            error: function (e) {
+                console.log(e);
+            },
+            ontimeout: function (event) {
+                console.log(event);
+            }
+        })
+        syncAjax.sendRequest();
+        return response_json;
+    };
+
+    var fileViewListItemClass = function () {
+        this.accountId = -1;
+        this.directoryId = -1;
+        this.fileId = -1;
+        this.userCustomName = "";
+        this.extendName = "";
+        this.fileSize = -1;
+        this.isDir = true;
+        this.sha256Hex = "";
+        this.md56Hex = "";
+    }
+
+    var tbDirectory2fileViewListItem = function (tbDirectory) {
+        let listItem = new fileViewListItemClass();
+        listItem.accountId = tbDirectory["accountId"];
+        listItem.directoryId = tbDirectory["directoryId"];
+        listItem.fileId = null;
+        listItem.userCustomName = tbDirectory["directoryName"];
+        listItem.extendName = null;
+        listItem.fileSize = null;
+        listItem.isDir = true;
+        listItem.sha256Hex = null;
+        listItem.md56Hex = null;
+        return listItem;
+    }
+
+    var fileViewListItem2tbDirectory = function (listItem) {
+        var tbDirectory = {};
+        tbDirectory["accountId"] = listItem.accountId;
+        tbDirectory["directoryId"] = listItem.directoryId;
+        tbDirectory["directoryName"] = listItem.userCustomName;
+        return tbDirectory;
+    }
+
+    var userFile2fileViewListItem = function (userFile) {
+        var listItem = new fileViewListItemClass();
+        listItem.accountId = userFile["accountId"];
+        listItem.directoryId = userFile["directoryId"];
+        listItem.fileId = userFile["fileId"];
+        listItem.userCustomName = userFile["userCustomFileName"];
+        listItem.extendName = this.getFileExtendName(listItem.userCustomName);
+        listItem.fileSize = userFile["fileSize"];
+        listItem.isDir = false;
+        listItem.sha256Hex = userFile["fileHashSha256"];
+        listItem.md56Hex = userFile["fileHashMd5"];
+        return listItem;
+    }
+
+    var fileViewListItem2userFile = function (listItem) {
+        var userFile = {};
+        userFile["accountId"] = listItem.accountId;
+        userFile["directoryId"] = listItem.directoryId;
+        userFile["fileId"] = listItem.fileId;
+        userFile["userCustomFileName"] = listItem.userCustomName;
+        userFile["fileSize"] = listItem.fileSize;
+        userFile["fileHashSha256"] = listItem.sha256Hex;
+        userFile["fileHashMd5"] = listItem.md56Hex;
+        return userFile;
+    }
+
+
+</script>
+<!-- header 顶栏用户名Vue -->
+<script type="text/javascript">
+
+    var headerVue = new Vue({
+        el: "#myHeaderWrapper",
+        data: function () {
+            return {
+                size: 'large'
+            }
+        },
+        methods: {
+            handleCommand(command) {
+                if (command === 'logout') {
+                    window.location.href = "../account/logout";
+                    // this.$confirm('确定退出登录?', '退出登录', {
+                    //     confirmButtonText: '确定',
+                    //     cancelButtonText: '取消',
+                    //     type: 'warning',
+                    // }).then( () => {
+                    //     //TODO
+                    //     }
+                    // ).catch((e) => {
+                    //     console.log(e);
+                    // });
+                } else if (command === 'profile') {
+                    //TODO
+                }
+            }
+        },
+        computed: {
+            userName: function () {
+                let username = "路人";
+                let syncAjax = new AjaxSync({
+                    url: "../account/username",
+                    type: 'get',
+                    timeout: 50000,  //5秒超时
+                    contentType: "text/plain;charset=utf-8",
+                    success: function (recvData) {
+                        console.log(recvData);
+                        recvData = "" + recvData;
+                        if (recvData.toUpperCase() !== "Anonymous".toUpperCase()) {
+                            username = recvData;
+                        }
+                    },
+                    //异常处理
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    ontimeout: function (event) {
+                        console.log(event);
+                    }
+                });
+                syncAjax.sendRequest();
+                return username;
+            }
+        }
+    });
+</script>
+<!-- 路径面包屑Vue -->
+<script type="text/javascript">
+    var breadCrumbListRootDirName = "根目录";
+    var myBreadCrumb = new Vue({
+        el: "#myBreadcrumbWrapper",
+        data: function () {
+            return {
+                //  面包屑导航栏数组
+                breadCrumbList:[breadCrumbListRootDirName],
+            };
+        },
+        computed: {},
+        methods: {
+            setCurrPath(index) {
+                console.log('myBreadcrumbWrapper' + ":" + "set path index=" + index);
+                if (index === null || index === 0 || index < 0)
+                    this.breadCrumbList = [breadCrumbListRootDirName];
+                else
+                    this.breadCrumbList = this.breadCrumbList.slice(0, index + 1);
+                cwdPath = "";
+                for (let i = 1; i < this.breadCrumbList.length; i++) {
+                    cwdPath = cwdPath + '/' + this.breadCrumbList[i];
+                }
+                fileTableVue.justUpdateFileList();
+                console.log("breadCrumbList=" + this.breadCrumbList);
+            },
+            addPath(dirName) {
+                console.log('myBreadcrumbWrapper' + ":" + "add path dirName=" + dirName);
+                this.breadCrumbList.push(dirName);
+                console.log("breadCrumbList=" + this.breadCrumbList);
+            },
+            popCurrPath() {
+                let dirName = this.breadCrumbList.pop();
+                console.log('myBreadcrumbWrapper' + ":" + "pop path dirName=" + dirName);
+                console.log("breadCrumbList=" + this.breadCrumbList);
+                return dirName;
+            }
+        }
+    });
+</script>
+<!-- 文件列表Vue -->
+<script type="text/javascript">
+
+    var cwdPath = "";
+
+    var fileTableVue = new Vue({
+        el: '#fileTable',
+        props: {},
+        data: function () {
+            return {
+                //  文件图片Map映射
+                fileImgMap: {
+                    dir: '../static/images/file/dir.png',
+                    chm: '../static/images/file/file_chm.png',
+                    css: '../static/images/file/file_css.png',
+                    csv: '../static/images/file/file_csv.png',
+                    png: '../static/images/file/file_pic.png',
+                    jpg: '../static/images/file/file_pic.png',
+                    jpeg: '../static/images/file/file_pic.png',
+                    bmp: '../static/images/file/file_pic.png',
+                    docx: '../static/images/file/file_word.png',
+                    doc: '../static/images/file/file_word.png',
+                    ppt: '../static/images/file/file_ppt.png',
+                    pptx: '../static/images/file/file_ppt.png',
+                    xls: '../static/images/file/file_excel.png',
+                    xlsx: '../static/images/file/file_excel.png',
+                    mp4: '../static/images/file/file_video.png',
+                    avi: '../static/images/file/file_avi.png',
+                    rar: '../static/images/file/file_rar.png',
+                    zip: '../static/images/file/file_zip.png',
+                    dmg: '../static/images/file/file_dmg.png',
+                    mp3: '../static/images/file/file_music.png',
+                    flac: '../static/images/file/file_music.png',
+                    open: '../static/images/file/file_open.png',
+                    pdf: '../static/images/file/file_pdf.png',
+                    rtf: '../static/images/file/file_rtf.png',
+                    txt: '../static/images/file/file_txt.png',
+                    log: '../static/images/file/file_txt.png',
+                    oa: '../static/images/file/file_oa.png',
+                    unknown: '../static/images/file/file_unknown.png',
+                    js: '../static/images/file/file_js.png',
+                    html: '../static/images/file/file_html.png',
+                    img: '../static/images/file/file_img.png',
+                    sql: '../static/images/file/file_sql.png',
+                    jar: '../static/images/file/file_jar.png',
+                    svg: '../static/images/file/file_svg.png',
+                    gif: '../static/images/file/file_gif.png',
+                    json: '../static/images/file/file_json.png',
+                    exe: '../static/images/file/file_exe.png',
+                    md: '../static/images/file/file_code.png',
+                    yml: '../static/images/file/file_yml.png',
+                    xml: '../static/images/file/file_xml.png',
+                    apk: '../static/images/file/file_apk.png',
+                    iso: '../static/images/file/file_iso.png',
+                },
+                //  可以识别的文件类型
+                fileImgTypeList: [
+                    'png',
+                    'jpg',
+                    'jpeg',
+                    'docx',
+                    'doc',
+                    'ppt',
+                    'pptx',
+                    'xls',
+                    'xlsx',
+                    'avi',
+                    'mp4',
+                    'css',
+                    'csv',
+                    'chm',
+                    'rar',
+                    'zip',
+                    'dmg',
+                    'mp3',
+                    'flac',
+                    'open',
+                    'pdf',
+                    'rtf',
+                    'txt',
+                    'oa',
+                    'js',
+                    'html',
+                    'img',
+                    'sql',
+                    'jar',
+                    'svg',
+                    'gif',
+                    'json',
+                    'exe',
+                    'md',
+                    'yml',
+                    'xml',
+                    'apk',
+                    'iso',
+                    'bmp',
+                    'log'
+                ],
+                fileList: this.getFileList(cwdPath),
+                multipleSelection: []
+                //     [{
+                //         "fileId": 776,
+                //         "pid": 775,
+                //         "userId": 1,
+                //         "fileName": "/dirTest/2dir/Magisk_MTK.json",
+                //         "extendName": "json",
+                //         "filePath": "/1621177709638/1621581406995/e33a185ddbc8393a82a1340a0ddfbc9.json",
+                //         "fileSize": 825,
+                //         "isDir": false,
+                //         "hash": "e33a185ddbc8393a82a1340a0ddfbc9",
+                //         "type": 2,
+                //         "downloadNum": 0,
+                //         "typeName": null,
+                //         "createTime": "2021-05-21T07:17:13.705+00:00",
+                //         "lastModifyTime": "2021-05-21T07:17:13.705+00:00",
+                //         "url": null,
+                //         "name": "Magisk_MTK.json",
+                //         "path": "e33a185ddbc8393a82a1340a0ddfbc9.json"
+                //     }, {
+                //         "fileId": 777,
+                //         "pid": 775,
+                //         "userId": 1,
+                //         "fileName": "/dirTest/2dir/CSDNtmpNote2.png",
+                //         "extendName": "png",
+                //         "filePath": "/1621177709638/1621581406995/904a83e0d9bc5e5e49181e3979148fe6.png",
+                //         "fileSize": 366229,
+                //         "isDir": false,
+                //         "hash": "904a83e0d9bc5e5e49181e3979148fe6",
+                //         "type": 1,
+                //         "downloadNum": 0,
+                //         "typeName": null,
+                //         "createTime": "2021-05-21T07:17:25.207+00:00",
+                //         "lastModifyTime": "2021-05-21T07:17:25.207+00:00",
+                //         "url": null,
+                //         "name": "CSDNtmpNote2.png",
+                //         "path": "904a83e0d9bc5e5e49181e3979148fe6.png"
+                //     }]
+
+            }
+        },
+        methods: {
+            /**
+             * 表格数据获取相关事件
+             */
+
+
+            getFileDownloadLink(row) {
+                let request_json_payload = {};
+                request_json_payload.accountId = row.accountId;
+                request_json_payload.directoryId = row.directoryId;
+                request_json_payload.fileId = row.fileId;
+                request_json_payload.userCustomFileName = row.userCustomName;
+
+                let request_json = {
+                    "version": "1",
+                    "operation": "file",
+                    "data": {
+                        "version": "1",
+                        "operation": "download",
+                        "data": request_json_payload
+                    }
+                };
+                let response_json = commonJsonRequest(request_json);
+                console.log(response_json)
+                if (response_json) {
+                    if (response_json.success && response_json.data) {
+                        if (response_json.data.uri) {
+                            return "" + response_json.data.uri;
+                        }
+                    }
+                }
+
+                return "";
+            },
+
+            /**
+             * 向API发起 cd 请求
+             */
+            getFileList(dirPath) {
+                if (dirPath === null || dirPath === "") {
+                    dirPath = '/';
+                }
+
+                let request_json = {
+                    "version": "1",
+                    "operation": "file",
+                    "data": {
+                        "version": "1",
+                        "operation": "cd",
+                        "data": {
+                            "path": "" + dirPath
+                        }
+                    }
+                };
+
+                let response_json = commonJsonRequest(request_json);
+
+                let resultFileList = [];
+                if (response_json != null && response_json.data) {
+                    let directories = response_json.data.directories;
+                    let files = response_json.data.files;
+                    for (let dirKey in directories) {
+                        let listItem = tbDirectory2fileViewListItem(directories[dirKey]);
+                        resultFileList.push(listItem);
+                    }
+                    for (let filesKey in files) {
+                        let listItem = userFile2fileViewListItem(files[filesKey]);
+                        resultFileList.push(listItem);
+                    }
+                }
+                console.log(resultFileList);
+                return resultFileList;
+            },
+
+            /**
+             * 计算文件大小
+             * @param size
+             * @returns {string}
+             */
+            calculateFileSize(size) {
+                const B = 1024;
+                const KB = Math.pow(1024, 2);
+                const MB = Math.pow(1024, 3);
+                const GB = Math.pow(1024, 4);
+                if (!size) {
+                    if (size === 0) {
+                        return '0'
+                    }
+                    return '_'
+                } else if (size < KB) {
+                    return (size / B).toFixed(0) + 'KiB'
+                } else if (size < MB) {
+                    return (size / KB).toFixed(1) + 'MiB'
+                } else if (size < GB) {
+                    return (size / MB).toFixed(2) + 'GiB'
+                } else {
+                    return (size / GB).toFixed(3) + 'TiB'
+                }
+            },
+            //  根据文件扩展名设置文件图片
+            setFileImg(extendName) {
+                if (extendName === null) {
+                    //  文件夹
+                    return this.fileImgMap.dir
+                } else if (!this.fileImgTypeList.includes(extendName)) {
+                    //  无法识别文件类型的文件
+                    return this.fileImgMap.unknown
+                } else {
+                    //  可以识别文件类型的文件
+                    return this.fileImgMap[extendName]
+                }
+            },
+            calculateSize(size) {
+                return this.calculateFileSize(size)
+            },
+            //  点击文件名
+            clickFileName(row) {
+                console.log('fileTable' + ":" + "click row=" + row);
+                //  若是目录则进入目录
+                if (row.isDir) {
+                    // if(cwdPath === "/"){
+                    //     cwdPath = cwdPath + row.name;
+                    // }
+                    // else {
+                    //     cwdPath = cwdPath + '/' + row.name;
+                    // }
+                    cwdPath = cwdPath + '/' + row.userCustomName;
+                    console.log(cwdPath);
+                    myBreadCrumb.addPath(row.userCustomName);
+                    this.fileList = this.getFileList(cwdPath);
+                } //  若是文件
+                else {
+                    console.log(row);
+                    //打开链接
+                    window.open("../download/" + this.getFileDownloadLink(row), '_blank');
+                    //https://disk.cnovel.club/api/file/preview?uri=1/1621177709638/1621581406995/904a83e0d9bc5e5e49181e3979148fe6.png&name=CSDNtmpNote2.png
+                }
+            },
+            justUpdateFileList() {
+                console.log(cwdPath);
+                this.fileList = this.getFileList(cwdPath);
+            },
+            /**
+             * 表格勾选框事件
+             */
+            //  表格-全选事件, selectoin 勾选的行数据
+            selectionChange(selection) {
+                console.log(selection);
+                this.multipleSelection = selection;
+                myOperationMenuVue.selectionFile = this.multipleSelection;
+                // this.$emit('selectionChange', selection)
+            }
+        },
+        computed: {}
+    })
+</script>
+
+<!-- 工具栏Vue -->
+<script>
+
+    var myOperationMenuVue = new Vue({
+        el: '#myOperationMenuWrapper',
+        name: "OperationMenu",
+        props: {},
+        data: function () {
+            return {
+                selectionFile:[],
+                action: '../upload',
+                // loading: false,
+                dialogVisible: false,
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                },
+                dirData: [],
+                treeSelectId: 0,
+                dir: fileTableVue.fileImgMap.dir,
+                isMove: false,
+                isCopy: false,
+                isDelete: false,
+                isReName: false,
+                isDownload: false,
+                compress: false,
+                decompression: false,
+                options: 0
+            }
+        },
+        methods: {
+            mkdirRequest: function (dirName) {
+                let request_json_payload = cwdPath + '/' + dirName;
+                let request_json = {
+                    "version": "1",
+                    "operation": "file",
+                    "data": {
+                        "version": "1",
+                        "operation": "mkdir",
+                        "data": {"path": request_json_payload}
+                    }
+                };
+                console.log("mkdir request_json:" + JSON.stringify(request_json));
+                let response_json = commonJsonRequest(request_json);
+                console.log("mkdir response_json:" + JSON.stringify(response_json));
+                // if(response_json && response_json.success){}
+                return response_json;
+            },
+            newDir: function () {
+                this.$prompt('请输入文件夹名称', '创建文件夹', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                }).then(({value}) => {
+                    let response_json = this.mkdirRequest("" + value)
+                    if (response_json.success) {
+                        this.$message({
+                            message: '文件夹创建成功',
+                            type: 'success'
+                        });
+                        fileTableVue.justUpdateFileList();
+                    } else {
+                        this.$message.error('文件夹创建失败');
+                    }
+                }).catch((e) => {
+                    console.log("新建文件夹发生错误：" + e);
+                });
+            },
+            deleteSelectedItem: function () {
+                this.$confirm('此操作将永久删除选中项目, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(
+                    () => {
+                        let items = this.selectionFile;
+
+                        let request_json_payload = {
+                            printWorkDirector: cwdPath,
+                            // currDirectory: null ,
+                            directories: {},
+                            files: {}
+                        };
+
+                        for (let i = 0; i < items.length; i++) {
+                            if (items[i].isDir) {
+                                let tbDirectory = fileViewListItem2tbDirectory(items[i]);
+                                request_json_payload.directories[tbDirectory.directoryName] = tbDirectory;
+                            } else {
+                                let userFile = fileViewListItem2userFile(items[i]);
+                                request_json_payload.files[userFile.userCustomFileName] = userFile;
+                            }
+                        }
+
+                        let request_json = {
+                            "version": "1",
+                            "operation": "file",
+                            "data": {
+                                "version": "1",
+                                "operation": "delete",
+                                "data": request_json_payload
+                            }
+                        };
+                        console.log(request_json);
+                        let response_json = commonJsonRequest(request_json);
+                        console.log(response_json);
+
+                        if (response_json && response_json.success) {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                        } else {
+                            this.$message.error('部分删除失败');
+                        }
+                        fileTableVue.justUpdateFileList();
+                    }
+                ).catch(() => {
+                });
+            },
+
+            rename: function () {
+                let name = this.selectionFile[0].userCustomName;
+                let names = name.split(".");
+                let fileSuffix = names[names.length - 1];
+                name = name.replace("." + fileSuffix, "");
+                this.$prompt('请输入新的名称', '重命名', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValue: name
+                }).then(
+                    ({value}) => {
+                        console.log("rename:" + value);
+                        // renameFile({id: this.selectionFile[0].fileId, name: value}).then(
+                        //     res => {
+                        //         if (res.result) {
+                        //             this.$message({
+                        //                 message: '重命名成功',
+                        //                 type: 'success'
+                        //             });
+                        //             this.$emit('getTableDataByType', this.search)
+                        //         } else {
+                        //             this.$message.error('重命名失败');
+                        //         }
+                        //     }
+                        // );
+                    }
+                ).catch(() => {
+                });
+            },
+            uploadSuccess: function (response) {
+                // this.loading = false;
+                if (response.success) {
+                    this.$message({
+                        message: '上传成功',
+                        type: 'success'
+                    });
+                } else {
+                    this.$message.error('上传失败');
+                }
+                this.Loading.close();
+                fileTableVue.justUpdateFileList();
+            },
+            beforeUpload: function (file) {
+                this.Loading = this.$loading({fullscreen: true, background: 'rgba(0, 0, 0, 0.7)'});
+                return true;
+            },
+            searchFileByName: function () {
+                // this.$emit('getTableDataByType', this.search)
+            },
+            downLoad: function () {
+                this.selectionFile.forEach(it => {
+                    download({fileId: it.fileId}).then(res => {
+                        this.$download(res.data.url, it.fileName);
+                    });
+                });
+            },
+            moveTo: function () {
+                this.dialog();
+                this.options = 1;
+            },
+            copyTo: function () {
+                this.dialog();
+                this.options = 2;
+            },
+            dialog: function () {
+                listDirTree().then(res => {
+                    this.dirData = [res.data];
+                });
+                this.dialogVisible = true;
+            },
+            close: function () {
+                this.dialogVisible = false;
+                this.options = 0;
+            },
+            submit: function () {
+                if (this.options === 1) {
+                    this.close();
+                    moveDir({
+                        "sourceListId": this.selectionFile.map(i => i.fileId),
+                        "targetId": this.treeSelectId
+                    }).then((res) => {
+                        if (res.result) {
+                            this.$message({
+                                type: 'success',
+                                message: '移动成功!'
+                            });
+                            this.$emit('getTableDataByType', this.search)
+                        } else {
+                            this.$message.error('移动失败');
+                        }
+                    })
+                } else if (this.options === 2) {
+                    this.close();
+                    copyDir({
+                        "sourceListId": this.selectionFile.map(i => i.fileId),
+                        "targetId": this.treeSelectId
+                    }).then((res) => {
+                        if (res.result) {
+                            this.$message({
+                                type: 'success',
+                                message: '复制成功!'
+                            });
+                            this.$emit('getTableDataByType', this.search)
+                        } else {
+                            if (res && res.code === 500 && res.msg) {
+                                this.$message.error(res.msg);
+                                return;
+                            }
+                            this.$message.error('复制失败');
+                        }
+                    })
+                }
+            },
+            //  移动文件模态框：选择目录事件
+            selectNodeClick(data) {
+                this.treeSelectId = data.id;
+            },
+        },
+        computed: {
+            search: {
+                get() {
+                    // return this.$store.getters.search
+                },
+                set(search) {
+                    // this.$store.dispatch("setSearch", search);
+                    console.log(search);
+                }
+            }
+        },
+        watch: {
+            'selectionFile': function (newVal) {
+                //'zip', 'rar', 'gz', '7z'
+                const ZIP = ['zip', 'rar'];
+                this.isMove = newVal !== undefined && newVal.length > 0;
+                this.isCopy = newVal !== undefined && newVal.length > 0;
+                this.isDelete = newVal !== undefined && newVal.length > 0;
+                this.isReName = newVal !== undefined && newVal.length ===1;
+                this.isDownload = newVal !== undefined && newVal.length > 0;
+                this.decompression = newVal !== undefined && newVal.length === 1 && ZIP.includes(newVal[0].extendName);
+            }
+        }
+    });
+
+    // var myOperationMenu = ;
+</script>
+<script type="text/javascript" src="app.js"></script>
+</html>

@@ -33,7 +33,7 @@
         <embed src="ziyuan/mp3/yournameAtDusk.mp3" hidden="true" autostart="true" loop="true" />
     -->
 </head>
-<body background="<%=request.getContextPath() %>/static/pic/yourname_dusk.jpg">
+<body background="<%=request.getContextPath() %>/static/images/yourname_dusk.jpg">
 <div id="div1" class="makeDivCenterParent">
     <div id="div2" class="broaderBreath">
         <div id="div3" class="divForm">
@@ -149,7 +149,7 @@
             contentType: "application/json;charset=utf-8",
             success: function (recvData) {
                 console.log(recvData);
-                //服务器返回响应，根据响应结果，分析是否登录成功
+                //服务器返回响应，根据响应结果，分析是否请求成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj = JSON.parse(recvData);
                 console.log(recvDataObj.success);
@@ -204,7 +204,7 @@
             contentType: "application/json;charset=utf-8",
             success: function (recvData) {
                 console.log(recvData);
-                //服务器返回响应，根据响应结果，分析是否登录成功
+                //服务器返回响应，根据响应结果，分析是否请求成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj = JSON.parse(recvData);
                 console.log(recvDataObj.success);

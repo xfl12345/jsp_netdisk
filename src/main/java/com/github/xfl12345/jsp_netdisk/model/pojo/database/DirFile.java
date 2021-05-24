@@ -11,6 +11,10 @@ import java.io.Serializable;
 public class DirFile implements Serializable {
     private static final long serialVersionUID = -98512128020992632L;
     /**
+     * 账号ID
+     */
+    private Long accountId;
+    /**
      * 目录ID
      */
     private Long directoryId;
@@ -19,6 +23,18 @@ public class DirFile implements Serializable {
      */
     private Long fileId;
 
+    /**
+     * 用户自定义的文件名
+     */
+    private String userCustomFileName;
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
 
     public Long getDirectoryId() {
         return directoryId;
@@ -34,6 +50,14 @@ public class DirFile implements Serializable {
 
     public void setFileId(Long fileId) {
         this.fileId = fileId;
+    }
+
+    public String getUserCustomFileName() {
+        return userCustomFileName;
+    }
+
+    public void setUserCustomFileName(String userCustomFileName) {
+        this.userCustomFileName = userCustomFileName;
     }
 
 }

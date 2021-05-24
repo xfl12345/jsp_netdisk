@@ -1,11 +1,10 @@
 package com.github.xfl12345.jsp_netdisk.controller;
 
-import com.github.xfl12345.jsp_netdisk.appconst.AppInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import com.github.xfl12345.jsp_netdisk.model.service.TbAccountService;
+import com.github.xfl12345.jsp_netdisk.model.service.AccountService;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,7 +14,7 @@ import static com.github.xfl12345.jsp_netdisk.StaticSpringApp.appInfo;
 public class IndexController {
 
     @Autowired
-    private TbAccountService tbAccountService;
+    private AccountService accountService;
 
     @RequestMapping("index")
     public ModelAndView indexView(HttpServletRequest request){
@@ -24,7 +23,7 @@ public class IndexController {
         modelAndView.setViewName("index");
         modelAndView.addObject("divFormTitle","欢迎来到"+ appInfo.getAppName() + "！");
 
-        if(tbAccountService.checkIsLoggedIn(request.getSession())) {
+        if(accountService.checkIsLoggedIn(request.getSession())) {
 //            modelAndView.addObject("divFormTitle","您已登录！");
             modelAndView.addObject("btn1text", "进入网盘");
             modelAndView.addObject("btn1url", "account/home");

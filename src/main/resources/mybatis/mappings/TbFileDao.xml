@@ -13,6 +13,25 @@
         <result property="fileHashSha256" column="file_hash_sha256" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryByMD5andSHA256" resultMap="TbFileMap">
+        select *
+        from jsp_netdisk.tb_file
+        <where>
+            file_hash_md5 = #{fileHashMd5}
+            and file_hash_sha256 = #{fileHashSha256}
+            <if test="fileName != null and fileName != ''">
+                and file_name = binary #{fileName}
+            </if>
+            <if test="fileSize != null">
+                and file_size = #{fileSize}
+            </if>
+            <if test="fileType != null">
+                and file_type = #{fileType}
+            </if>
+        </where>
+    </select>
+
     <!--以实体为条件，做统计-->
     <select id="countAll" resultType="java.lang.Long">
         select count(*) as c
@@ -22,7 +41,7 @@
                 and file_id = #{fileId}
             </if>
             <if test="fileName != null and fileName != ''">
-                and file_name = #{fileName}
+                and file_name = binary #{fileName}
             </if>
             <if test="fileSize != null">
                 and file_size = #{fileSize}
@@ -47,15 +66,14 @@
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="TbFileMap">
-        select
-        file_id, file_name, file_size, file_type, file_status, file_upload_time, file_hash_md5, file_hash_sha256
+        select *
         from jsp_netdisk.tb_file
         <where>
             <if test="fileId != null">
                 and file_id = #{fileId}
             </if>
             <if test="fileName != null and fileName != ''">
-                and file_name = #{fileName}
+                and file_name = binary #{fileName}
             </if>
             <if test="fileSize != null">
                 and file_size = #{fileSize}
@@ -80,35 +98,21 @@
 
     <!--查询单个-->
     <select id="queryById" resultMap="TbFileMap">
-        select file_id,
-               file_name,
-               file_size,
-               file_type,
-               file_status,
-               file_upload_time,
-               file_hash_md5,
-               file_hash_sha256
+        select *
         from jsp_netdisk.tb_file
         where file_id = #{fileId}
     </select>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="TbFileMap">
-        select file_id,
-               file_name,
-               file_size,
-               file_type,
-               file_status,
-               file_upload_time,
-               file_hash_md5,
-               file_hash_sha256
+        select *
         from jsp_netdisk.tb_file
         <where>
             <if test="tbFile.fileId != null">
                 and file_id = #{tbFile.fileId}
             </if>
             <if test="tbFile.fileName != null and tbFile.fileName != ''">
-                and file_name = #{tbFile.fileName}
+                and file_name = binary #{tbFile.fileName}
             </if>
             <if test="tbFile.fileSize != null">
                 and file_size = #{tbFile.fileSize}

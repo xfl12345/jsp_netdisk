@@ -33,11 +33,12 @@ public class TbPermissionService {
     @Autowired
     private TbPermissionDao tbPermissionDao;
 
-    private static long PERMISSION_ID_EMAIL_NOT_ACTIVATED_ACCOUNT = -1;
-    private static long PERMISSION_ID_NORMAL_ACCOUNT = -1;
+    private static final Long unkownId = -1L;
+    private static Long PERMISSION_ID_EMAIL_NOT_ACTIVATED_ACCOUNT = unkownId;
+    private static Long PERMISSION_ID_NORMAL_ACCOUNT = unkownId;
 
 
-    public long getTemplatePermissionId(TbPermission tbPermissionTemplate){
+    public Long getTemplatePermissionId(TbPermission tbPermissionTemplate){
         List<TbPermission> tbPermissions = tbPermissionDao.queryAll(tbPermissionTemplate);
         if(tbPermissions.size() > 1){
             logger.error("权限模板有问题！请检查。");
@@ -55,20 +56,21 @@ public class TbPermissionService {
                     logger.error("发生重大未知问题！！！error="+ e);
                 }
             }
+            //获取权限模板在数据库中的权限ID
             tbPermissions = tbPermissionDao.queryAll(tbPermissionTemplate);
         }
         return tbPermissions.get(0).getPermissionId();
     }
 
-    public long gePermissionIdOfEmailNotActivatedAccount(){
-        if( PERMISSION_ID_EMAIL_NOT_ACTIVATED_ACCOUNT == -1) {
+    public Long gePermissionIdOfEmailNotActivatedAccount(){
+        if( PERMISSION_ID_EMAIL_NOT_ACTIVATED_ACCOUNT.equals(unkownId)) {
             PERMISSION_ID_EMAIL_NOT_ACTIVATED_ACCOUNT = getTemplatePermissionId( getEmailNotActivatedPermission() );
         }
         return PERMISSION_ID_EMAIL_NOT_ACTIVATED_ACCOUNT;
     }
 
-    public long gePermissionIdOfNormalAccount(){
-        if( PERMISSION_ID_NORMAL_ACCOUNT == -1) {
+    public Long gePermissionIdOfNormalAccount(){
+        if( PERMISSION_ID_NORMAL_ACCOUNT.equals(unkownId)) {
             PERMISSION_ID_NORMAL_ACCOUNT = getTemplatePermissionId( getNormalAccountPermission() );
         }
         return PERMISSION_ID_NORMAL_ACCOUNT;

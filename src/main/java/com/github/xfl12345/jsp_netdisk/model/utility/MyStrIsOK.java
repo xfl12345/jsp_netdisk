@@ -8,6 +8,7 @@ package com.github.xfl12345.jsp_netdisk.model.utility;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * @author xfl666
@@ -18,11 +19,13 @@ public class MyStrIsOK {
     public static final String matchDigitOnly = "^[0-9]+$";
     public static final String matchNumWithSignOnly = "[+-]?[1-9]+[0-9]*(\\.[0-9]+)?";
     public static final String matchEmailOnly = "([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+";
+    public static final String matchFilename = "[^\\s\\\\/:\\*\\?\\\"<>\\|](\\x20|[^\\s\\\\/:\\*\\?\\\"<>\\|])*[^\\s\\\\/:\\*\\?\\\"<>\\|\\.]$";
 
     public static final Pattern containUppercaseLetter = Pattern.compile("[A-Z]");
     public static final Pattern containLowercaseLetter = Pattern.compile("[a-z]");
     public static final Pattern containLetter = Pattern.compile("[a-zA-Z]");
     public static final Pattern containNum = Pattern.compile("\\d");
+    public static final Pattern containLetterAndDigit = Pattern.compile("[a-z0-9A-Z]");
 
     /**
      * 匹配如下特殊符号
@@ -145,6 +148,15 @@ public class MyStrIsOK {
     }
 
     /**
+     * 去除字符串中的英文字母和阿拉伯数字
+     * @param str 给我一个字符串
+     * @return 还你一个没有英文字母、没有阿拉伯数字的字符串
+     */
+    public static String removeLetterAndDigit(String str){
+        return containLetterAndDigit.matcher(str).replaceAll("").trim();
+    }
+
+    /**
      * 去除字符串中的 合法的特殊字符
      * @param str 给我一个字符串
      * @return 还你一个没有合法的特殊字符的字符串
@@ -153,7 +165,11 @@ public class MyStrIsOK {
         return containAllowedSpecialCharacter.matcher(str).replaceAll("").trim();
     }
 
-
+    /**
+     * 从字符串里提取邮箱地址
+     * @param str 输入字符串
+     * @return 以数组的形式，返回str字符串中包含的所有邮箱地址
+     */
     public static ArrayList<String> getEmailFromString(String str){
         ArrayList<String> email = new ArrayList<>();
         Pattern p = Pattern.compile(matchEmailOnly);
@@ -162,6 +178,18 @@ public class MyStrIsOK {
             email.add(m.group());
         }
         return email;
+    }
+
+    /**
+     * 判断一个文件名是否合法（目录名称通用）
+     * @param filename 文件名
+     * @return 是否合法
+     */
+    public static boolean isValidFileName(String filename) {
+        if (filename == null || "".equals(filename) || filename.length() > 255)
+            return false;
+        else
+            return filename.matches(matchFilename);
     }
 
 }

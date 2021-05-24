@@ -1,8 +1,10 @@
 package com.github.xfl12345.jsp_netdisk.model.service;
 
 import com.github.xfl12345.jsp_netdisk.model.dao.DirFileDao;
-import com.github.xfl12345.jsp_netdisk.model.dao.TbDirectoryDao;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.DirFile;
+import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbDirectory;
+import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbFile;
+import com.github.xfl12345.jsp_netdisk.model.pojo.database.UserFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +17,38 @@ public class DirFileService {
 
     private final Logger logger = LoggerFactory.getLogger(DirFileService.class);
 
+
     @Autowired
     private DirFileDao dirFileDao;
 
 
 
+    /**
+     * 通过 文件目录关联对象 查询 文件
+     * @param dirFile 文件目录关联对象
+     * @return 文件对象
+     */
+    public TbFile queryFileByDirFile(DirFile dirFile) {
+        return dirFileDao.queryFileByDirFile(dirFile);
+    }
 
+    /**
+     * 通过 文件目录关联对象 查询 目录
+     * @param dirFile 文件目录关联对象
+     * @return 目录对象
+     */
+    public TbDirectory queryDirectoryByDirFile(DirFile dirFile) {
+        return dirFileDao.queryDirectoryByDirFile(dirFile);
+    }
 
-
-
-
+    /**
+     * 通过目录ID查询子文件
+     * @param directoryId 目录ID
+     * @return 目录子文件对象
+     */
+    public List<UserFile> queryAllFileInDir(Long directoryId) {
+        return dirFileDao.queryAllFileInDir(directoryId);
+    }
 
     /**
      * 通过实体作为筛选条件统计

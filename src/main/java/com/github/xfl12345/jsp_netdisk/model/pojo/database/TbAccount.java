@@ -39,6 +39,10 @@ public class TbAccount implements Serializable {
      */
     private Integer registerTimeInMs;
     /**
+     * 用户网盘的根目录
+     */
+    private Long rootDirectoryId;
+    /**
      * 账号绑定的电子邮箱
      */
     private String email;
@@ -106,6 +110,14 @@ public class TbAccount implements Serializable {
 
     public void setRegisterTimeInMs(Integer registerTimeInMs) {
         this.registerTimeInMs = registerTimeInMs;
+    }
+
+    public Long getRootDirectoryId() {
+        return rootDirectoryId;
+    }
+
+    public void setRootDirectoryId(Long rootDirectoryId) {
+        this.rootDirectoryId = rootDirectoryId;
     }
 
     public String getEmail() {

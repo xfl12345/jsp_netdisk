@@ -4,7 +4,7 @@
   User: xfl666
   Date: 2021/4/23
   Time: 11:03
-  To change this template use File | Settings | File Templates.
+  To change this template use FileOperation | Settings | FileOperation Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" language="java" %>
 <html>
@@ -47,7 +47,7 @@
             contentType:"application/json;charset=utf-8",
             success: function (recvData) {
                 console.log(recvData);
-                //服务器返回响应，根据响应结果，分析是否登录成功
+                //服务器返回响应，根据响应结果，分析是否请求成功
                 let testJsonStr = "{\"flag\":false,\"StudentID\":\"1\",\"CourseID\":\"1\",\"score\":\"80\"}";
                 let recvDataObj =JSON.parse(recvData);
                 console.log(recvDataObj.success);

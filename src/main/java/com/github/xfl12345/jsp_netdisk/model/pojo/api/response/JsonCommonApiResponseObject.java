@@ -1,11 +1,12 @@
 package com.github.xfl12345.jsp_netdisk.model.pojo.api.response;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.xfl12345.jsp_netdisk.appconst.api.result.JsonApiResult;
 import com.github.xfl12345.jsp_netdisk.model.service.api.JsonCommonApiService;
 
 public class JsonCommonApiResponseObject extends BaseResponseObject {
     public int code;
-    public Object data;
+    public JSONObject data;
 
     public JsonCommonApiResponseObject() {
         this.version = JsonCommonApiService.undefinedVersion;//未定义版本号

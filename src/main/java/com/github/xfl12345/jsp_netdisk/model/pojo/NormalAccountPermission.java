@@ -12,8 +12,8 @@ public final class NormalAccountPermission extends TbPermission {
         super.setAccountOperation(TbPermissionField.ACCOUNT_OPERATION.NORMAL_USER);
         super.setAccountInfoOperation(TbPermissionField.ACCOUNT_INFO_OPERATION.SELF_ONLY);
         super.setFileOperation(TbPermissionField.generateFileOperationCode(
-                TbPermissionField.FileOperationElement.ALLOW_EVERYTHING,
-                TbPermissionField.FileOperationElement.NO_PERMISSION,
-                TbPermissionField.FileOperationElement.NO_PERMISSION));
+                TbPermissionField.FileOperationPermission.ALLOW_EVERYTHING,
+                TbPermissionField.FileOperationPermission.NO_PERMISSION,
+                TbPermissionField.FileOperationPermission.NO_PERMISSION));
     }
 }

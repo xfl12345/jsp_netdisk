@@ -1,4 +1,4 @@
-package com.github.xfl12345.jsp_netdisk.model.pojo.api.request;
+package com.github.xfl12345.jsp_netdisk.model.pojo.api.request.payload;
 
 /**
  * LoginRequestField 里定义的字段

@@ -17,7 +17,7 @@
         select email,
                verification_log
         from jsp_netdisk.email_verification
-        where email = #{email}
+        where email = binary #{email}
     </select>
 
     <!--查询指定行数据-->
@@ -43,14 +43,14 @@
                 verification_log = #{verificationLog},
             </if>
         </set>
-        where email = #{email}
+        where email = binary #{email}
     </update>
 
     <!--通过email删除-->
     <delete id="deleteByEmail">
         delete
         from jsp_netdisk.email_verification
-        where email = #{email}
+        where email = binary #{email}
     </delete>
 
 </mapper>

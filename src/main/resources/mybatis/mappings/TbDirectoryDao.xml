@@ -27,15 +27,14 @@
                 and account_id = #{accountId}
             </if>
             <if test="directoryName != null and directoryName != ''">
-                and directory_name = #{directoryName}
+                and directory_name = binary #{directoryName}
             </if>
         </where>
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="TbDirectoryMap">
-        select
-        directory_id, parent_directory_id, account_id, directory_name
+        select *
         from jsp_netdisk.tb_directory
         <where>
             <if test="directoryId != null">
@@ -51,7 +50,7 @@
                 and account_id = #{accountId}
             </if>
             <if test="directoryName != null and directoryName != ''">
-                and directory_name = #{directoryName}
+                and directory_name = binary #{directoryName}
             </if>
         </where>
     </select>
@@ -87,7 +86,7 @@
                 and account_id = #{tbDirectory.accountId}
             </if>
             <if test="tbDirectory.directoryName != null and tbDirectory.directoryName != ''">
-                and directory_name = #{tbDirectory.directoryName}
+                and directory_name = binary #{tbDirectory.directoryName}
             </if>
         </where>
         limit #{offset}, #{limit}

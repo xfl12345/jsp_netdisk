@@ -56,7 +56,7 @@ public class TbPermissionField {
     /**
      * 文件操作权限的代码单元
      */
-    public enum FileOperationElement {
+    public enum FileOperationPermission {
         NO_PERMISSION("无权限",0),
         VIEW_ONLY("可见",1),
         READ_ONLY("可读",2),
@@ -68,7 +68,7 @@ public class TbPermissionField {
         private final String name;
         private final int num;
 
-        FileOperationElement(String str, int num){
+        FileOperationPermission(String str, int num){
             this.name = str;
             this.num = num;
         }
@@ -87,8 +87,8 @@ public class TbPermissionField {
          * @param code 文件操作权限代码
          * @return 文件操作权限的元权限
          */
-        public static FileOperationElement codeOf(int code){
-            for(FileOperationElement xxxEnum : values()){
+        public static FileOperationPermission codeOf(int code){
+            for(FileOperationPermission xxxEnum : values()){
                 if(xxxEnum.getNum() == code){
                     return xxxEnum;
                 }
@@ -97,30 +97,30 @@ public class TbPermissionField {
         }
     }
 
-    public static int generateFileOperationCode(FileOperationElement[] fileOperationElements){
+    public static int generateFileOperationCode(FileOperationPermission[] fileOperationPermissions){
         int fileOperationCode = 0;
-        for (FileOperationElement element : fileOperationElements) {
+        for (FileOperationPermission element : fileOperationPermissions) {
             fileOperationCode += element.getNum() + fileOperationCode * 10;
         }
         return fileOperationCode;
     }
 
-    public static int generateFileOperationCode(
-            FileOperationElement selfAccount,
-            FileOperationElement groupAccount,
-            FileOperationElement otherAccount){
-        int fileOperationCode = selfAccount.getNum() * 100
+    public static Integer generateFileOperationCode(
+            FileOperationPermission selfAccount,
+            FileOperationPermission groupAccount,
+            FileOperationPermission otherAccount){
+        Integer fileOperationCode = selfAccount.getNum() * 100
                 + groupAccount.getNum() * 10
                 + otherAccount.getNum();
         return fileOperationCode;
     }
 
-    public static FileOperationElement[] formatFileOperationCode(int fileOperationCode){
-        FileOperationElement[] fileOperationElements = new FileOperationElement[3];
-        fileOperationElements[0] = FileOperationElement.codeOf(  ((int) (fileOperationCode * 0.01)) % 10 );
-        fileOperationElements[1] = FileOperationElement.codeOf(  ((int) (fileOperationCode * 0.1)) % 10 );
-        fileOperationElements[2] = FileOperationElement.codeOf(  fileOperationCode % 10 );
-        return fileOperationElements;
+    public static FileOperationPermission[] formatFileOperationCode(Integer fileOperationCode){
+        FileOperationPermission[] fileOperationPermissions = new FileOperationPermission[3];
+        fileOperationPermissions[0] = FileOperationPermission.codeOf(  ((int) (fileOperationCode * 0.01)) % 10 );
+        fileOperationPermissions[1] = FileOperationPermission.codeOf(  ((int) (fileOperationCode * 0.1)) % 10 );
+        fileOperationPermissions[2] = FileOperationPermission.codeOf(  fileOperationCode % 10 );
+        return fileOperationPermissions;
     }
 
 }

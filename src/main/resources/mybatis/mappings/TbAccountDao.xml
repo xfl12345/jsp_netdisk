@@ -10,6 +10,7 @@
         <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
         <result property="registerTime" column="register_time" jdbcType="VARCHAR"/>
         <result property="registerTimeInMs" column="register_time_in_ms" jdbcType="INTEGER"/>
+        <result property="rootDirectoryId" column="root_directory_id" jdbcType="INTEGER"/>
         <result property="email" column="email" jdbcType="VARCHAR"/>
         <result property="gender" column="gender" jdbcType="VARCHAR"/>
         <result property="accountStatus" column="account_status" jdbcType="INTEGER"/>
@@ -24,7 +25,7 @@
                 and account_id = #{accountId}
             </if>
             <if test="username != null and username != ''">
-                and username = #{username}
+                and username = binary #{username}
             </if>
             <if test="passwordHash != null and passwordHash != ''">
                 and password_hash = #{passwordHash}
@@ -41,8 +42,11 @@
             <if test="registerTimeInMs != null">
                 and register_time_in_ms = #{registerTimeInMs}
             </if>
+            <if test="rootDirectoryId != null">
+                and root_directory_id = #{rootDirectoryId}
+            </if>
             <if test="email != null and email != ''">
-                and email = #{email}
+                and email = binary #{email}
             </if>
             <if test="gender != null and gender != ''">
                 and gender = #{gender}
@@ -55,48 +59,21 @@
 
     <!--查询单个-->
     <select id="queryById" resultMap="TbAccountMap">
-        select account_id,
-               username,
-               password_hash,
-               password_salt,
-               permission_id,
-               register_time,
-               register_time_in_ms,
-               email,
-               gender,
-               account_status
+        select *
         from jsp_netdisk.tb_account
         where account_id = #{accountId}
     </select>
 
     <select id="queryByUsername" resultMap="TbAccountMap">
-        select account_id,
-               username,
-               password_hash,
-               password_salt,
-               permission_id,
-               register_time,
-               register_time_in_ms,
-               email,
-               gender,
-               account_status
+        select *
         from jsp_netdisk.tb_account
-        where username = #{username}
+        where username = binary #{username}
     </select>
 
     <select id="queryByEmail" resultMap="TbAccountMap">
-        select account_id,
-               username,
-               password_hash,
-               password_salt,
-               permission_id,
-               register_time,
-               register_time_in_ms,
-               email,
-               gender,
-               account_status
+        select *
         from jsp_netdisk.tb_account
-        where email = #{email}
+        where email = binary #{email}
     </select>
 
     <select id="userQueryByUsername" resultMap="TbAccountMap">
@@ -105,11 +82,12 @@
                permission_id,
                register_time,
                register_time_in_ms,
+               root_directory_id,
                email,
                gender,
                account_status
         from jsp_netdisk.tb_account
-        where username = #{username}
+        where username = binary #{username}
     </select>
 
     <select id="userQueryByEmail" resultMap="TbAccountMap">
@@ -118,11 +96,12 @@
                permission_id,
                register_time,
                register_time_in_ms,
+               root_directory_id,
                email,
                gender,
                account_status
         from jsp_netdisk.tb_account
-        where email = #{email}
+        where email = binary #{email}
     </select>
 
     <select id="queryValidationInformationByUsername" resultMap="TbAccountMap">
@@ -137,23 +116,14 @@
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="TbAccountMap">
-        select account_id,
-               username,
-               password_hash,
-               password_salt,
-               permission_id,
-               register_time,
-               register_time_in_ms,
-               email,
-               gender,
-               account_status
+        select *
         from jsp_netdisk.tb_account
         <where>
             <if test="tbAccount.accountId != null">
                 and account_id = #{tbAccount.accountId}
             </if>
             <if test="tbAccount.username != null and tbAccount.username != ''">
-                and username = #{tbAccount.username}
+                and username = binary #{tbAccount.username}
             </if>
             <if test="tbAccount.passwordHash != null and tbAccount.passwordHash != ''">
                 and password_hash = #{tbAccount.passwordHash}
@@ -170,8 +140,11 @@
             <if test="tbAccount.registerTimeInMs != null">
                 and register_time_in_ms = #{tbAccount.registerTimeInMs}
             </if>
+            <if test="rootDirectoryId != null">
+                and root_directory_id = #{tbAccount.rootDirectoryId}
+            </if>
             <if test="tbAccount.email != null and tbAccount.email != ''">
-                and email = #{tbAccount.email}
+                and email = binary #{tbAccount.email}
             </if>
             <if test="tbAccount.gender != null and tbAccount.gender != ''">
                 and gender = #{tbAccount.gender}
@@ -185,16 +158,14 @@
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="TbAccountMap">
-        select
-        account_id, username, password_hash, password_salt, permission_id, register_time, register_time_in_ms,
-        email, gender, account_status
+        select *
         from jsp_netdisk.tb_account
         <where>
             <if test="accountId != null">
                 and account_id = #{accountId}
             </if>
             <if test="username != null and username != ''">
-                and username = #{username}
+                and username = binary #{username}
             </if>
             <if test="passwordHash != null and passwordHash != ''">
                 and password_hash = #{passwordHash}
@@ -211,8 +182,11 @@
             <if test="registerTimeInMs != null">
                 and register_time_in_ms = #{registerTimeInMs}
             </if>
+            <if test="rootDirectoryId != null">
+                and root_directory_id = #{rootDirectoryId}
+            </if>
             <if test="email != null and email != ''">
-                and email = #{email}
+                and email = binary #{email}
             </if>
             <if test="gender != null and gender != ''">
                 and gender = #{gender}
@@ -226,37 +200,22 @@
     <!--新增所有列-->
     <insert id="insert" keyProperty="accountId" useGeneratedKeys="true">
         insert into jsp_netdisk.tb_account(username, password_hash, password_salt, permission_id, register_time,
-                                           register_time_in_ms, email, gender, account_status)
+                                           register_time_in_ms, root_directory_id, email, gender, account_status)
         values (#{username}, #{passwordHash}, #{passwordSalt}, #{permissionId}, #{registerTime}, #{registerTimeInMs},
-                #{email}, #{gender}, #{accountStatus})
+                #{rootDirectoryId}, #{email}, #{gender}, #{accountStatus})
     </insert>
 
     <insert id="insertBatch" keyProperty="accountId" useGeneratedKeys="true" >
         insert into jsp_netdisk.tb_account(username, password_hash, password_salt, permission_id, register_time,
-        register_time_in_ms, email, gender, account_status)
+        register_time_in_ms, root_directory_id, email, gender, account_status)
         values
         <foreach collection="entities" item="entity"  separator="," >
             (#{entity.username}, #{entity.passwordHash}, #{entity.passwordSalt}, #{entity.permissionId},
-            #{entity.registerTime}, #{entity.registerTimeInMs}, #{entity.email}, #{entity.gender},
+            #{entity.registerTime}, #{entity.registerTimeInMs}, #{entity.rootDirectoryId}, #{entity.email}, #{entity.gender},
             #{entity.accountStatus})
         </foreach>
     </insert>
 
-<!--    <insert id="insertOrUpdateBatch" keyProperty="accountId" useGeneratedKeys="true">-->
-<!--        insert into jsp_netdisk.tb_account(username, password_hash, password_salt, permission_id, register_time,-->
-<!--        register_time_in_ms, email, gender, account_status)-->
-<!--        values-->
-<!--        <foreach collection="entities" item="entity" separator=",">-->
-<!--            (#{entity.username}, #{entity.passwordHash}, #{entity.passwordSalt}, #{entity.permissionId},-->
-<!--            #{entity.registerTime}, #{entity.registerTimeInMs}, #{entity.email}, #{entity.gender},-->
-<!--            #{entity.accountStatus})-->
-<!--        </foreach>-->
-<!--        on duplicate key update-->
-<!--        username = values(username) , password_hash = values(password_hash) , password_salt =-->
-<!--        values(password_salt) , permission_id = values(permission_id) , register_time = values(register_time) ,-->
-<!--        register_time_in_ms = values(register_time_in_ms) , email = values(email) , gender = values(gender) ,-->
-<!--        account_status = values(account_status)-->
-<!--    </insert>-->
 
     <!--通过主键修改数据-->
     <update id="update">
@@ -279,6 +238,9 @@
             </if>
             <if test="registerTimeInMs != null">
                 register_time_in_ms = #{registerTimeInMs},
+            </if>
+            <if test="rootDirectoryId != null">
+                root_directory_id = #{rootDirectoryId},
             </if>
             <if test="email != null and email != ''">
                 email = #{email},

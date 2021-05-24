@@ -49,6 +49,12 @@
         <beans:property name="suffix" value=".jsp"/>
 <!--        <beans:property name="order" value="0"/>-->
     </beans:bean>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/upload/**"/>
+            <bean class="com.github.xfl12345.jsp_netdisk.model.interceptor.MyUploadInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 
     <!--    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />-->
     <!--    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />-->
@@ -57,7 +63,12 @@
 
     <!--    <bean id="/login" name="login" class="com.github.xfl12345.jsp_netdisk.controller.LoginController" />-->
 
-    <!--上传文件配置-->
+    <!-- 上传文件拦截器，拦截上传文件请求 -->
+    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <beans:property name="defaultEncoding" value="UTF-8"/>
+        <!-- 上传单个文件的最大值，单位Byte;如果-1，表示无限制 -->
+        <beans:property name="maxUploadSize" value="-1"/>
+    </beans:bean>
     <!--    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
     <!--        <beans:property name="maxUploadSize" value="1024000000"/>-->
     <!--    </beans:bean>-->

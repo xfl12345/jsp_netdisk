@@ -5,12 +5,11 @@ import com.github.xfl12345.jsp_netdisk.appconst.api.request.LoginRequestField;
 import com.github.xfl12345.jsp_netdisk.appconst.api.result.*;
 import com.github.xfl12345.jsp_netdisk.appconst.field.MySessionAttributes;
 import com.github.xfl12345.jsp_netdisk.appconst.field.TbAccountField;
-import com.github.xfl12345.jsp_netdisk.model.dao.TbDirectoryDao;
 import com.github.xfl12345.jsp_netdisk.model.pojo.api.response.BaseResponseObject;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount;
 import com.github.xfl12345.jsp_netdisk.model.pojo.result.RegisterResult;
 import com.github.xfl12345.jsp_netdisk.model.service.EmailVerificationService;
-import com.github.xfl12345.jsp_netdisk.model.service.TbAccountService;
+import com.github.xfl12345.jsp_netdisk.model.service.AccountService;
 import com.github.xfl12345.jsp_netdisk.model.service.TbPermissionService;
 import com.github.xfl12345.jsp_netdisk.model.utility.JsonRequestUtils;
 import org.jsoup.nodes.Element;
@@ -41,16 +40,10 @@ public class OldApiController {
     private final Logger logger= LoggerFactory.getLogger(ApiController.class);
 
     @Autowired
-    private TbAccountService tbAccountService;
+    private AccountService accountService;
 
     @Autowired
     private EmailVerificationService emailVerificationService;
-
-    @Autowired
-    private TbPermissionService tbPermissionService;
-
-    @Autowired
-    private TbDirectoryDao tbDirectoryDao;
 
     /**
      * 对POST 登录请求，做出API响应
@@ -65,7 +58,7 @@ public class OldApiController {
         responseObject.success = false;
         String msg = "";
         //是否已登录？
-        if(tbAccountService.checkIsLoggedIn(request.getSession())){//已登录
+        if(accountService.checkIsLoggedIn(request.getSession())){//已登录
             msg = "已登录一个账号！请先注销当前账号！";
         }
         else {//格式化请求数据为JSON对象
@@ -84,7 +77,7 @@ public class OldApiController {
             String username = (String) requesetJsonObject.get(LoginRequestField.USERNAME);
             String password =  (String) requesetJsonObject.get(LoginRequestField.PASSWORD);
             //验证
-            LoginApiResult loginApiResult = tbAccountService.login(session, username, password);
+            LoginApiResult loginApiResult = accountService.login(session, username, password);
             //成功唯一绑定 会话ID 和 账号ID
             if(loginApiResult.equals(LoginApiResult.SUCCEED)) {
                 responseObject.success = true;
@@ -105,17 +98,11 @@ public class OldApiController {
         responseObject.version = String.valueOf(version);
         responseObject.success = false;
         String msg = "";
-        String htmlCode = "";
-//        boolean isAcceptHtmlCode = false;
 
         //格式化请求数据为JSON对象
-        JSONObject requesetJsonObject = null;
+        JSONObject requesetJsonObject;
         try {
             requesetJsonObject = JsonRequestUtils.getJsonObject(request);
-//            Object obj = requesetJsonObject.getBoolean("isAcceptHtmlCode");
-//            if(obj != null){
-//                isAcceptHtmlCode = (boolean) obj;
-//            }
         }
         catch (Exception e){
             msg = "请求格式错误！请使用JSON格式！";
@@ -123,25 +110,12 @@ public class OldApiController {
             JsonRequestUtils.responseObjectAsJsonStr(response, responseObject);
             return;
         }
-        LogoutApiResult logoutApiResult = tbAccountService.logout(request.getSession());
+        LogoutApiResult logoutApiResult = accountService.logout(request.getSession());
         if( logoutApiResult == LogoutApiResult.SUCCEED){
             responseObject.success = true;
-//            if(isAcceptHtmlCode){
-//                Element jump2index = new Element("a");
-//                jump2index.attr("href","index");
-//                jump2index.text("返回首页");
-//                htmlCode += jump2index.toString();
-//
-//                Element jump2login = new Element("a");
-//                jump2login.attr("href","login");
-//                jump2login.text("再次登录");
-//                htmlCode += jump2login.toString();
-//            }
-
         }
         msg = logoutApiResult.getName();
         responseObject.message = msg;
-//        responseJsonObject.put("htmlCode",htmlCode);
         JsonRequestUtils.responseObjectAsJsonStr(response, responseObject);
     }
 
@@ -165,7 +139,7 @@ public class OldApiController {
             JsonRequestUtils.responseObjectAsJsonStr(response, responseObject);
             return;
         }
-        RegisterResult registerResult = tbAccountService.register(request.getSession(), requesetJsonObject, 1);
+        RegisterResult registerResult = accountService.register(request.getSession(), requesetJsonObject, 1);
         if(registerResult.registerApiResult.equals(RegisterApiResult.SUCCEED)){
             responseObject.success = true;
             String accountIdStr = Long.toString(registerResult.tbAccount.getAccountId());

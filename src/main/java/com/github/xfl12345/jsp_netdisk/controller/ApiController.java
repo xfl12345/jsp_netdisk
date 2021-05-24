@@ -2,14 +2,14 @@ package com.github.xfl12345.jsp_netdisk.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.xfl12345.jsp_netdisk.appconst.api.result.*;
-import com.github.xfl12345.jsp_netdisk.model.dao.TbDirectoryDao;
 import com.github.xfl12345.jsp_netdisk.model.dao.TbPermissionDao;
 import com.github.xfl12345.jsp_netdisk.model.pojo.api.response.JsonCommonApiResponseObject;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbAccount;
+import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbFile;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbPermission;
 import com.github.xfl12345.jsp_netdisk.model.pojo.api.response.BaseResponseObject;
 import com.github.xfl12345.jsp_netdisk.model.service.EmailVerificationService;
-import com.github.xfl12345.jsp_netdisk.model.service.TbAccountService;
+import com.github.xfl12345.jsp_netdisk.model.service.AccountService;
 import com.github.xfl12345.jsp_netdisk.model.service.TbPermissionService;
 import com.github.xfl12345.jsp_netdisk.model.service.api.JsonCommonApiService;
 import com.github.xfl12345.jsp_netdisk.model.utility.JsonRequestUtils;
@@ -38,16 +38,13 @@ public class ApiController {
     private final Logger logger= LoggerFactory.getLogger(ApiController.class);
 
     @Autowired
-    private TbAccountService tbAccountService;
+    private AccountService accountService;
 
     @Autowired
     private EmailVerificationService emailVerificationService;
 
     @Autowired
     private TbPermissionService tbPermissionService;
-
-    @Autowired
-    private TbDirectoryDao tbDirectoryDao;
 
     @Autowired
     private JsonCommonApiService jsonCommonApiService;
@@ -91,13 +88,13 @@ public class ApiController {
         }
 
         try{
-            TbAccount tbAccountResult = tbAccountService.queryById(66666L);
+            TbAccount tbAccountResult = accountService.queryById(66666L);
             if(tbAccountResult == null){
                 logger.info("MyBatis查不到数据的时候，如果设定返回不是集合而是bean实体类，则返回的确实是null");
             }
             TbAccount tbAccount = new TbAccount();
             tbAccount.setAccountId(6666666L);
-            List<TbAccount> tbAccountList = tbAccountService.queryAllByLimit(tbAccount, 0, 100);
+            List<TbAccount> tbAccountList = accountService.queryAllByLimit(tbAccount, 0, 100);
             logger.info("tbAccountList.size()="+tbAccountList.size());
             TbPermission tbPermission = new TbPermission();
             tbPermission.setPermissionId(1L);

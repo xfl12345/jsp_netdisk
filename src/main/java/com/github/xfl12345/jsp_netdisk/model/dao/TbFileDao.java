@@ -1,6 +1,5 @@
 package com.github.xfl12345.jsp_netdisk.model.dao;
 
-import com.github.xfl12345.jsp_netdisk.model.pojo.database.AccountFile;
 import com.github.xfl12345.jsp_netdisk.model.pojo.database.TbFile;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,6 +12,12 @@ import java.util.List;
  * @since 2021-04-19 16:13:16
  */
 public interface TbFileDao {
+
+
+    /**
+     * 通过MD5和SHA256的哈希值去查询唯一确定的文件
+     */
+    TbFile queryByMD5andSHA256(TbFile tbFile);
 
     /**
      * 通过实体作为筛选条件统计

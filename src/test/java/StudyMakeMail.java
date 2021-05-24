@@ -54,7 +54,7 @@ public class StudyMakeMail {
         // 8. 将该邮件保存到本地
 //        String outputPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath();
 //        System.out.println("Resource root="+outputPath);
-//        File file = new File(outputPath);
+//        FileOperation file = new FileOperation(outputPath);
         OutputStream out = new FileOutputStream("myEmail.eml");
         message.writeTo(out);
         out.flush();

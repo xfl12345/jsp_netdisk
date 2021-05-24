@@ -1,5 +1,4 @@
-package com.github.xfl12345.jsp_netdisk.model.pojo;
-
+package com.github.xfl12345.jsp_netdisk.model.utility.check;
 
 import org.apache.ibatis.io.Resources;
 import org.everit.json.schema.Schema;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class JsonSchemaCheck{
-
     private final Schema schema;
 
     public JsonSchemaCheck(String jsonSchemaFilePath) throws IOException {
@@ -38,6 +36,4 @@ public class JsonSchemaCheck{
         JSONObject data = new JSONObject(new JSONTokener(jsonString) );
         schema.validate(data);
     }
-
-
 }

@@ -76,8 +76,9 @@ public class RegisterFieldChecker {
 
     public static boolean isUsernameUnderLegal(String str) {
         String tmpStr = str;
-        tmpStr = MyStrIsOK.removeLetter(MyStrIsOK.removeNum(tmpStr));
-        return !MyStrIsOK.isContainAllowedSpecialCharacter(str);
+        tmpStr = MyStrIsOK.removeLetterAndDigit(MyStrIsOK.removeNum(tmpStr));
+        tmpStr =  MyStrIsOK.removeAllowedSpecialCharacter(tmpStr);
+        return tmpStr.equals("");
     }
 
     public static boolean isGenderUnderLegal(String gender) {

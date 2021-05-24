@@ -1,14 +1,18 @@
 package com.github.xfl12345.jsp_netdisk.model;
 
 import com.fasterxml.uuid.Generators;
+import com.github.xfl12345.jsp_netdisk.StaticSpringApp;
+import com.github.xfl12345.jsp_netdisk.appconst.MyConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+
 public class PreLoad {
 
-    private final Logger logger = LoggerFactory.getLogger(PreLoad.class);
-
-    public PreLoad() {
+    public PreLoad() throws IOException {
+        Logger logger = LoggerFactory.getLogger(PreLoad.class);
         Generators.timeBasedGenerator();
         logger.info("PreLoad loaded.");
     }

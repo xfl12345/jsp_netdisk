@@ -3,50 +3,151 @@
 <mapper namespace="com.github.xfl12345.jsp_netdisk.model.dao.DirFileDao">
 
     <resultMap type="com.github.xfl12345.jsp_netdisk.model.pojo.database.DirFile" id="DirFileMap">
+        <result property="accountId" column="account_id" jdbcType="INTEGER"/>
         <result property="directoryId" column="directory_id" jdbcType="INTEGER"/>
         <result property="fileId" column="file_id" jdbcType="INTEGER"/>
+        <result property="userCustomFileName" column="user_custom_file_name" jdbcType="VARCHAR"/>
     </resultMap>
+
+    <resultMap type="com.github.xfl12345.jsp_netdisk.model.pojo.database.UserFile" id="UserFileMap">
+        <result property="accountId" column="account_id" jdbcType="INTEGER"/>
+        <result property="directoryId" column="directory_id" jdbcType="INTEGER"/>
+        <result property="fileId" column="file_id" jdbcType="INTEGER"/>
+        <result property="userCustomFileName" column="user_custom_file_name" jdbcType="VARCHAR"/>
+
+        <result property="fileSize" column="file_size" jdbcType="INTEGER"/>
+        <result property="fileType" column="file_type" jdbcType="INTEGER"/>
+        <result property="fileStatus" column="file_status" jdbcType="INTEGER"/>
+        <result property="fileHashMd5" column="file_hash_md5" jdbcType="VARCHAR"/>
+        <result property="fileHashSha256" column="file_hash_sha256" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap type="com.github.xfl12345.jsp_netdisk.model.pojo.database.TbFile" id="TbFileMap">
+        <result property="fileId" column="file_id" jdbcType="INTEGER"/>
+        <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+        <result property="fileSize" column="file_size" jdbcType="INTEGER"/>
+        <result property="fileType" column="file_type" jdbcType="INTEGER"/>
+        <result property="fileStatus" column="file_status" jdbcType="INTEGER"/>
+        <result property="fileUploadTime" column="file_upload_time" jdbcType="TIMESTAMP"/>
+        <result property="fileHashMd5" column="file_hash_md5" jdbcType="VARCHAR"/>
+        <result property="fileHashSha256" column="file_hash_sha256" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap type="com.github.xfl12345.jsp_netdisk.model.pojo.database.TbDirectory" id="TbDirectoryMap">
+        <result property="directoryId" column="directory_id" jdbcType="INTEGER"/>
+        <result property="parentDirectoryId" column="parent_directory_id" jdbcType="INTEGER"/>
+        <result property="accountId" column="account_id" jdbcType="INTEGER"/>
+        <result property="directoryName" column="directory_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--通过目录ID查询子文件 完整版-->
+    <select id="queryAllFileInDir" resultMap="UserFileMap">
+        select df.*, f.file_size, f.file_type, f.file_status, f.file_hash_md5, f.file_hash_sha256
+        from jsp_netdisk.dir_file as df, jsp_netdisk.tb_file as f
+        where df.directory_id = #{directoryId}
+          and df.file_id = f.file_id
+    </select>
+
+<!--    &lt;!&ndash;通过 UserFile 查找是否匹配&ndash;&gt;-->
+<!--    <select id="countUserFile" resultMap="UserFileMap">-->
+<!--        select count(*) as c-->
+<!--        from jsp_netdisk.dir_file as df, jsp_netdisk.tb_file as f-->
+<!--        where df.directory_id = #{directoryId}-->
+<!--          and df.file_id = f.file_id-->
+<!--          and f.file_size = #{fileSize}-->
+<!--          and f.file_type = #{fileType} -->
+<!--          and  f.file_status = #{fileStatus} -->
+<!--          and  f.file_hash_md5 = #{fileHashMd5} -->
+<!--          and  f.file_hash_sha256 = #{fileHashSha256}-->
+<!--    </select>-->
+
+
+
+    <!--通过用户自定义文件名查询文件-->
+    <select id="queryFileByDirFile" resultMap="TbFileMap">
+        select f.*
+        from (select file_id
+              from jsp_netdisk.dir_file
+              where account_id = #{accountId}
+                and user_custom_file_name = binary #{userCustomFileName}
+                and directory_id = #{directoryId}
+                and file_id = #{fileId})
+                 as df
+                 inner join jsp_netdisk.tb_file as f
+        where df.file_id = f.file_id
+    </select>
+
+    <!--通过 文件目录关联对象 查询 目录-->
+    <select id="queryDirectoryByDirFile" resultMap="TbDirectoryMap">
+        select d.*
+        from (select directory_id
+              from jsp_netdisk.dir_file
+              where account_id = #{accountId}
+                and user_custom_file_name = binary #{userCustomFileName}
+                and directory_id = #{directoryId}
+                and file_id = #{fileId})
+                 as df
+                 inner join jsp_netdisk.tb_directory as d
+        where df.directory_id = d.directory_id
+    </select>
 
     <!--以实体为条件，做统计-->
     <select id="countAll" resultType="java.lang.Long">
         select count(*) as c
         from jsp_netdisk.dir_file
         <where>
+            <if test="accountId != null">
+                and account_id = #{accountId}
+            </if>
             <if test="directoryId != null">
                 and directory_id = #{directoryId}
             </if>
             <if test="fileId != null">
                 and file_id = #{fileId}
+            </if>
+            <if test="userCustomFileName != null">
+                and user_custom_file_name = binary #{userCustomFileName}
             </if>
         </where>
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="DirFileMap">
-        select
-        directory_id, file_id
+        select *
         from jsp_netdisk.dir_file
         <where>
+            <if test="accountId != null">
+                and account_id = #{accountId}
+            </if>
             <if test="directoryId != null">
                 and directory_id = #{directoryId}
             </if>
             <if test="fileId != null">
                 and file_id = #{fileId}
             </if>
+            <if test="userCustomFileName != null">
+                and user_custom_file_name = binary #{userCustomFileName}
+            </if>
         </where>
     </select>
 
     <!--通过实体作为筛选条件查询，支持分页-->
     <select id="queryAllWithLimit" resultMap="DirFileMap">
-        select directory_id,
-        file_id
+        select *
         from jsp_netdisk.dir_file
         <where>
+            <if test="dirFile.accountId != null">
+                and account_id = #{dirFile.accountId}
+            </if>
             <if test="dirFile.directoryId != null">
                 and directory_id = #{dirFile.directoryId}
             </if>
             <if test="dirFile.fileId != null">
                 and file_id = #{dirFile.fileId}
+            </if>
+            <if test="dirFile.userCustomFileName != null">
+                and user_custom_file_name = binary #{dirFile.userCustomFileName}
             </if>
         </where>
         limit #{offset}, #{limit}
@@ -54,26 +155,29 @@
 
     <!--新增所有列-->
     <insert id="insert">
-        insert into jsp_netdisk.dir_file(directory_id, file_id)
-        values (#{directoryId}, #{fileId})
+        insert into jsp_netdisk.dir_file(account_id, directory_id, file_id, user_custom_file_name)
+        values (#{accountId}, #{directoryId}, #{fileId}, #{userCustomFileName})
     </insert>
 
     <insert id="insertBatch">
-        insert into jsp_netdisk.dir_file(directory_id, file_id)
+        insert into jsp_netdisk.dir_file(account_id, directory_id, file_id, user_custom_file_name)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.directoryId}, #{entity.fileId})
+            (#{entity.accountId}, #{entity.directoryId}, #{entity.fileId}, #{entity.userCustomFileName})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch">
-        insert into jsp_netdisk.dir_file(directory_id, file_id)
+        insert into jsp_netdisk.dir_file(account_id, directory_id, file_id, user_custom_file_name)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.directoryId}, #{entity.fileId})
+            (#{entity.accountId}, #{entity.directoryId}, #{entity.fileId}, #{entity.userCustomFileName})
         </foreach>
         on duplicate key update
-        directory_id = values(directory_id) , file_id = values(file_id)
+        account_id = values(account_id),
+        directory_id = values(directory_id) ,
+        file_id = values(file_id),
+        user_custom_file_name = values(user_custom_file_name)
     </insert>
 
     <!--删除-->
@@ -82,14 +186,20 @@
         from jsp_netdisk.dir_file
         <where>
             <!-- 防止出现双空导致整表清空 -->
-            <if test="directoryId == null and fileId == null">
+            <if test="accountId == null and directoryId == null and fileId == null and userCustomFileName == null">
                 and 666 = 2333
+            </if>
+            <if test="accountId != null">
+                and account_id = #{accountId}
             </if>
             <if test="directoryId != null">
                 and directory_id = #{directoryId}
             </if>
             <if test="fileId != null">
                 and file_id = #{fileId}
+            </if>
+            <if test="userCustomFileName != null">
+                and user_custom_file_name = binary #{userCustomFileName}
             </if>
         </where>
     </delete>

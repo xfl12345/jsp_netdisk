@@ -3,7 +3,8 @@ package com.github.xfl12345.jsp_netdisk;
 import com.fasterxml.uuid.Generators;
 import com.github.xfl12345.jsp_netdisk.appconst.AppInfo;
 import com.github.xfl12345.jsp_netdisk.appconst.MyConst;
-import com.github.xfl12345.jsp_netdisk.model.pojo.JsonSchemaCheck;
+import com.github.xfl12345.jsp_netdisk.model.listener.MySessionEventListener;
+import com.github.xfl12345.jsp_netdisk.model.utility.check.JsonSchemaCheck;
 import com.github.xfl12345.jsp_netdisk.model.utility.MyPropertiesUtils;
 import com.github.xfl12345.jsp_netdisk.model.utility.MyReflectUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -16,6 +17,7 @@ import org.springframework.context.ApplicationContextAware;
 import com.github.xfl12345.jsp_netdisk.model.pojo.html.VerificationEmailTemplate;
 import com.github.xfl12345.jsp_netdisk.model.utility.jdbc.MyDataSource;
 
+import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 
 
@@ -71,4 +73,7 @@ public class StaticSpringApp implements ApplicationContextAware {
         return springAppContext.getBean(beanId, JsonSchemaCheck.class);
     }
 
+    public static HttpSession getSessionById(String sessionId){
+        return springAppContext.getBean(MySessionEventListener.class).getSessionById(sessionId);
+    }
 }
