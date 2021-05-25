@@ -1,6 +1,8 @@
 package com.github.xfl12345.jsp_netdisk.model.pojo.database;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * (DirFile)实体类
@@ -8,7 +10,7 @@ import java.io.Serializable;
  * @author makejava
  * @since 2021-04-19 16:00:51
  */
-public class DirFile implements Serializable {
+public class DirFile implements Serializable, Cloneable {
     private static final long serialVersionUID = -98512128020992632L;
     /**
      * 账号ID
@@ -58,6 +60,34 @@ public class DirFile implements Serializable {
 
     public void setUserCustomFileName(String userCustomFileName) {
         this.userCustomFileName = userCustomFileName;
+    }
+
+    public boolean isAllFieldNotNull(){
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field f : fields) {
+            try {
+                //跳过final修饰的属性
+                if (Modifier.isFinal(f.getModifiers()))
+                    continue;
+                if( f.get(this) == null )
+                    return false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public DirFile clone(){
+        Object obj=null;
+        //调用Object类的clone方法，返回一个Object实例
+        try {
+            obj= super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return (DirFile) obj;
     }
 
 }

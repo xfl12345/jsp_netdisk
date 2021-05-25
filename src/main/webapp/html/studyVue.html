@@ -541,7 +541,7 @@
                                         fixed
                                         width="55">
                                 </el-table-column>
-                                <el-table-column prop="isDir" width="60">
+                                <el-table-column prop="itemIsDir" width="60">
                                     <template slot-scope="scope">
                                         <img :src="setFileImg(scope.row.extendName)"
                                              style="width: 30px;" alt=""/>
@@ -565,7 +565,7 @@
                                         show-overflow-tooltip
                                         label="类型">
                                     <template slot-scope="scope">
-                                        <span v-if="!scope.row.isDir">{{scope.row.extendName}}</span>
+                                        <span v-if="!scope.row.itemIsDir">{{scope.row.extendName}}</span>
                                         <span v-else>文件夹</span>
                                     </template>
                                 </el-table-column>
@@ -645,7 +645,7 @@
         this.userCustomName = "";
         this.extendName = "";
         this.fileSize = -1;
-        this.isDir = true;
+        this.itemIsDir = true;
         this.sha256Hex = "";
         this.md56Hex = "";
     }
@@ -658,7 +658,7 @@
         listItem.userCustomName = tbDirectory["directoryName"];
         listItem.extendName = null;
         listItem.fileSize = null;
-        listItem.isDir = true;
+        listItem.itemIsDir = true;
         listItem.sha256Hex = null;
         listItem.md56Hex = null;
         return listItem;
@@ -680,7 +680,7 @@
         listItem.userCustomName = userFile["userCustomFileName"];
         listItem.extendName = this.getFileExtendName(listItem.userCustomName);
         listItem.fileSize = userFile["fileSize"];
-        listItem.isDir = false;
+        listItem.itemIsDir = false;
         listItem.sha256Hex = userFile["fileHashSha256"];
         listItem.md56Hex = userFile["fileHashMd5"];
         return listItem;
@@ -731,7 +731,7 @@
         },
         computed: {
             userName: function () {
-                let username = "路人";
+                let username = "游客";
                 let syncAjax = new AjaxSync({
                     url: "../account/username",
                     type: 'get',
@@ -906,7 +906,7 @@
                 //         "extendName": "json",
                 //         "filePath": "/1621177709638/1621581406995/e33a185ddbc8393a82a1340a0ddfbc9.json",
                 //         "fileSize": 825,
-                //         "isDir": false,
+                //         "itemIsDir": false,
                 //         "hash": "e33a185ddbc8393a82a1340a0ddfbc9",
                 //         "type": 2,
                 //         "downloadNum": 0,
@@ -924,7 +924,7 @@
                 //         "extendName": "png",
                 //         "filePath": "/1621177709638/1621581406995/904a83e0d9bc5e5e49181e3979148fe6.png",
                 //         "fileSize": 366229,
-                //         "isDir": false,
+                //         "itemIsDir": false,
                 //         "hash": "904a83e0d9bc5e5e49181e3979148fe6",
                 //         "type": 1,
                 //         "downloadNum": 0,
@@ -981,15 +981,18 @@
                     dirPath = '/';
                 }
 
+
+                let request_json_payload = {
+                    path: "" + dirPath
+                };
+
                 let request_json = {
                     "version": "1",
                     "operation": "file",
                     "data": {
                         "version": "1",
                         "operation": "cd",
-                        "data": {
-                            "path": "" + dirPath
-                        }
+                        "data": request_json_payload
                     }
                 };
 
@@ -1057,7 +1060,7 @@
             clickFileName(row) {
                 console.log('fileTable' + ":" + "click row=" + row);
                 //  若是目录则进入目录
-                if (row.isDir) {
+                if (row.itemIsDir) {
                     // if(cwdPath === "/"){
                     //     cwdPath = cwdPath + row.name;
                     // }
@@ -1179,7 +1182,7 @@
                         };
 
                         for (let i = 0; i < items.length; i++) {
-                            if (items[i].isDir) {
+                            if (items[i].itemIsDir) {
                                 let tbDirectory = fileViewListItem2tbDirectory(items[i]);
                                 request_json_payload.directories[tbDirectory.directoryName] = tbDirectory;
                             } else {
@@ -1217,29 +1220,41 @@
 
             rename: function () {
                 let name = this.selectionFile[0].userCustomName;
-                let names = name.split(".");
-                let fileSuffix = names[names.length - 1];
-                name = name.replace("." + fileSuffix, "");
                 this.$prompt('请输入新的名称', '重命名', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     inputValue: name
                 }).then(
                     ({value}) => {
+                        value = "" + value
                         console.log("rename:" + value);
-                        // renameFile({id: this.selectionFile[0].fileId, name: value}).then(
-                        //     res => {
-                        //         if (res.result) {
-                        //             this.$message({
-                        //                 message: '重命名成功',
-                        //                 type: 'success'
-                        //             });
-                        //             this.$emit('getTableDataByType', this.search)
-                        //         } else {
-                        //             this.$message.error('重命名失败');
-                        //         }
-                        //     }
-                        // );
+
+                        let request_json_payload = {
+                            item : this.selectionFile[0],
+                            destName : value
+                        };
+
+
+                        let request_json = {
+                            "version": "1",
+                            "operation": "file",
+                            "data": {
+                                "version": "1",
+                                "operation": "changeName",
+                                "data": request_json_payload
+                            }
+                        };
+
+                        let response_json = commonJsonRequest(request_json);
+                        if (response_json.success) {
+                            this.$message({
+                                message: '重命名成功',
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error('重命名失败');
+                        }
+                        fileTableVue.justUpdateFileList();
                     }
                 ).catch(() => {
                 });
@@ -1265,11 +1280,11 @@
                 // this.$emit('getTableDataByType', this.search)
             },
             downLoad: function () {
-                this.selectionFile.forEach(it => {
-                    download({fileId: it.fileId}).then(res => {
-                        this.$download(res.data.url, it.fileName);
-                    });
-                });
+                // this.selectionFile.forEach(it => {
+                //     download({fileId: it.fileId}).then(res => {
+                //         this.$download(res.data.url, it.fileName);
+                //     });
+                // });
             },
             moveTo: function () {
                 this.dialog();
@@ -1280,57 +1295,59 @@
                 this.options = 2;
             },
             dialog: function () {
-                listDirTree().then(res => {
-                    this.dirData = [res.data];
-                });
-                this.dialogVisible = true;
+                //TODO 继续开发 移动 和 复制 功能
+                this.$message("功能暂未实现");
+                // listDirTree().then(res => {
+                //     this.dirData = [res.data];
+                // });
+                // this.dialogVisible = true;
             },
             close: function () {
                 this.dialogVisible = false;
                 this.options = 0;
             },
             submit: function () {
-                if (this.options === 1) {
-                    this.close();
-                    moveDir({
-                        "sourceListId": this.selectionFile.map(i => i.fileId),
-                        "targetId": this.treeSelectId
-                    }).then((res) => {
-                        if (res.result) {
-                            this.$message({
-                                type: 'success',
-                                message: '移动成功!'
-                            });
-                            this.$emit('getTableDataByType', this.search)
-                        } else {
-                            this.$message.error('移动失败');
-                        }
-                    })
-                } else if (this.options === 2) {
-                    this.close();
-                    copyDir({
-                        "sourceListId": this.selectionFile.map(i => i.fileId),
-                        "targetId": this.treeSelectId
-                    }).then((res) => {
-                        if (res.result) {
-                            this.$message({
-                                type: 'success',
-                                message: '复制成功!'
-                            });
-                            this.$emit('getTableDataByType', this.search)
-                        } else {
-                            if (res && res.code === 500 && res.msg) {
-                                this.$message.error(res.msg);
-                                return;
-                            }
-                            this.$message.error('复制失败');
-                        }
-                    })
-                }
+                // if (this.options === 1) {
+                //     this.close();
+                //     moveDir({
+                //         "sourceListId": this.selectionFile.map(i => i.fileId),
+                //         "targetId": this.treeSelectId
+                //     }).then((res) => {
+                //         if (res.result) {
+                //             this.$message({
+                //                 type: 'success',
+                //                 message: '移动成功!'
+                //             });
+                //             this.$emit('getTableDataByType', this.search)
+                //         } else {
+                //             this.$message.error('移动失败');
+                //         }
+                //     })
+                // } else if (this.options === 2) {
+                //     this.close();
+                //     copyDir({
+                //         "sourceListId": this.selectionFile.map(i => i.fileId),
+                //         "targetId": this.treeSelectId
+                //     }).then((res) => {
+                //         if (res.result) {
+                //             this.$message({
+                //                 type: 'success',
+                //                 message: '复制成功!'
+                //             });
+                //             this.$emit('getTableDataByType', this.search)
+                //         } else {
+                //             if (res && res.code === 500 && res.msg) {
+                //                 this.$message.error(res.msg);
+                //                 return;
+                //             }
+                //             this.$message.error('复制失败');
+                //         }
+                //     })
+                // }
             },
             //  移动文件模态框：选择目录事件
             selectNodeClick(data) {
-                this.treeSelectId = data.id;
+                // this.treeSelectId = data.id;
             },
         },
         computed: {

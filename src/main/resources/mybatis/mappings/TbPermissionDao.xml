@@ -13,7 +13,7 @@
 
     <!--以实体为条件，做统计-->
     <select id="countAll" resultType="java.lang.Long">
-        select count(*) as c
+        select count(1) as c
         from jsp_netdisk.tb_permission
         <where>
             <if test="permissionId != null">

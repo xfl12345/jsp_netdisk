@@ -17,7 +17,6 @@ public class DirFileService {
 
     private final Logger logger = LoggerFactory.getLogger(DirFileService.class);
 
-
     @Autowired
     private DirFileDao dirFileDao;
 
@@ -103,13 +102,14 @@ public class DirFileService {
     }
 
     /**
-     * 批量新增或按主键更新数据（MyBatis原生foreach方法）
+     * 更新
      *
-     * @param entities List<DirFile> 实例对象列表
+     * @param src DirFile 旧的实例对象列表
+     * @param dest DirFile 新的实例对象列表
      * @return 影响行数
      */
-    public int insertOrUpdateBatch(List<DirFile> entities) {
-        return dirFileDao.insertOrUpdateBatch(entities);
+    public int update(DirFile src, DirFile dest) {
+        return dirFileDao.update(src, dest);
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.github.xfl12345.jsp_netdisk.model.pojo.database;
 
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Date;
 
 public class UserFile {
@@ -114,6 +116,22 @@ public class UserFile {
 
     public void setFileHashSha256(String fileHashSha256) {
         this.fileHashSha256 = fileHashSha256;
+    }
+
+    public boolean isAllFieldNotNull(){
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field f : fields) {
+            try {
+                //跳过final修饰的属性
+                if (Modifier.isFinal(f.getModifiers()))
+                    continue;
+                if( f.get(this) == null )
+                    return false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
     }
 
 }

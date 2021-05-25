@@ -51,7 +51,7 @@
 
 <!--    &lt;!&ndash;通过 UserFile 查找是否匹配&ndash;&gt;-->
 <!--    <select id="countUserFile" resultMap="UserFileMap">-->
-<!--        select count(*) as c-->
+<!--        select count(1) as c-->
 <!--        from jsp_netdisk.dir_file as df, jsp_netdisk.tb_file as f-->
 <!--        where df.directory_id = #{directoryId}-->
 <!--          and df.file_id = f.file_id-->
@@ -94,7 +94,7 @@
 
     <!--以实体为条件，做统计-->
     <select id="countAll" resultType="java.lang.Long">
-        select count(*) as c
+        select count(1) as c
         from jsp_netdisk.dir_file
         <where>
             <if test="accountId != null">
@@ -167,25 +167,49 @@
         </foreach>
     </insert>
 
-    <insert id="insertOrUpdateBatch">
-        insert into jsp_netdisk.dir_file(account_id, directory_id, file_id, user_custom_file_name)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.accountId}, #{entity.directoryId}, #{entity.fileId}, #{entity.userCustomFileName})
-        </foreach>
-        on duplicate key update
-        account_id = values(account_id),
-        directory_id = values(directory_id) ,
-        file_id = values(file_id),
-        user_custom_file_name = values(user_custom_file_name)
-    </insert>
+    <!--  更新  -->
+    <update id="update">
+        update jsp_netdisk.dir_file
+        <set>
+            <if test="dest.accountId != null">
+                account_id = #{dest.accountId}
+            </if>
+            <if test="dest.directoryId != null">
+                directory_id = #{dest.directoryId}
+            </if>
+            <if test="dest.fileId != null">
+                file_id = #{dest.fileId}
+            </if>
+            <if test="dest.userCustomFileName != null">
+                user_custom_file_name = binary #{dest.userCustomFileName}
+            </if>
+        </set>
+        <where>
+            <!-- 防止出现四空导致整表更新 -->
+            <if test="src.accountId == null and src.directoryId == null and src.fileId == null and src.userCustomFileName == null">
+                and 666 = 2333
+            </if>
+            <if test="src.accountId != null">
+                and account_id = #{src.accountId}
+            </if>
+            <if test="src.directoryId != null">
+                and directory_id = #{src.directoryId}
+            </if>
+            <if test="src.fileId != null">
+                and file_id = #{src.fileId}
+            </if>
+            <if test="src.userCustomFileName != null">
+                and user_custom_file_name = binary #{src.userCustomFileName}
+            </if>
+        </where>
+    </update>
 
     <!--删除-->
     <delete id="deleteAll">
         delete
         from jsp_netdisk.dir_file
         <where>
-            <!-- 防止出现双空导致整表清空 -->
+            <!-- 防止出现四空导致整表清空 -->
             <if test="accountId == null and directoryId == null and fileId == null and userCustomFileName == null">
                 and 666 = 2333
             </if>

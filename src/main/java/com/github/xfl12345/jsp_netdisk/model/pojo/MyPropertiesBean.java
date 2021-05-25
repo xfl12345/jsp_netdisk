@@ -1,6 +1,7 @@
 package com.github.xfl12345.jsp_netdisk.model.pojo;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 
@@ -10,6 +11,8 @@ import java.util.Properties;
 public class MyPropertiesBean extends Properties {
 
     public MyPropertiesBean(String propertiesFileRelativePath) throws IOException {
-        super.load(MyPropertiesBean.class.getClassLoader().getResourceAsStream(propertiesFileRelativePath));
+        InputStream inputStream = MyPropertiesBean.class.getClassLoader().getResourceAsStream(propertiesFileRelativePath);
+        this.load(inputStream);
+        inputStream.close();
     }
 }

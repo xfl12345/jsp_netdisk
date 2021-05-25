@@ -100,26 +100,38 @@ public class FileTransformController {
                 } else {
                     response.setHeader("Content-Disposition", "attacher; filename*=UTF-8''" + name);
                 }
+                InputStream inputStream = null;
+                OutputStream outputStream = null;
                 try {
                     //打开本地文件流
-                    InputStream inputStream = new FileInputStream(downloadDetail.fileInDisk);
+                    inputStream = new FileInputStream(downloadDetail.fileInDisk);
                     //激活下载操作
-                    OutputStream os = response.getOutputStream();
+                    outputStream = response.getOutputStream();
 
                     //循环写入输出流
                     byte[] b = new byte[2048];
                     int length;
                     while ((length = inputStream.read(b)) > 0) {
-                        os.write(b, 0, length);
+                        outputStream.write(b, 0, length);
                         sentLength += b.length;
                     }
 
-                    //养成好习惯，关闭所有流
-                    os.close();
-                    inputStream.close();
                 } catch (Exception e) {
                     logger.error(e.toString());
                 }
+                try {
+                    //养成好习惯，关闭所有流
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                }
+                catch (IOException exception) {
+                    logger.error(exception.toString());
+                }
+
                 logger.debug("Download mission : sessionId=" + session.getId()
                         + ",directoryId=" + directoryId
                         + ",name" + name

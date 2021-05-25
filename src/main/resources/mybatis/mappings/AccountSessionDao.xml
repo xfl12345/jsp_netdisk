@@ -28,7 +28,7 @@
 
     <!--计数-->
 <!--    <select id="countByAccountId">-->
-<!--        select count(*) as c-->
+<!--        select count(1) as c-->
 <!--        from jsp_netdisk.account_session-->
 <!--        where account_id = #{accountId}-->
 <!--    </select>-->

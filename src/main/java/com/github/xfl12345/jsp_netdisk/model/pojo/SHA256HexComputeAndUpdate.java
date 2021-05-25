@@ -54,6 +54,12 @@ public class SHA256HexComputeAndUpdate extends Thread{
         } catch (IOException exception) {
             logger.error(exception.toString());
         }
+        try{
+            inputStream.close();
+        }
+        catch (Exception e){
+            logger.error(e.toString());
+        }
     }
 
     public String getHexStrHashResult(){

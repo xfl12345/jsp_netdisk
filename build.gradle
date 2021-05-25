@@ -5,19 +5,19 @@ buildscript {
     }
     dependencies {
         // https://mvnrepository.com/artifact/com.github.johnrengelman.shadow/com.github.johnrengelman.shadow.gradle.plugin
-        classpath group: 'com.github.johnrengelman.shadow', name: 'com.github.johnrengelman.shadow.gradle.plugin', version: '6.1.0', ext: 'pom'
+//        classpath group: 'com.github.johnrengelman.shadow', name: 'com.github.johnrengelman.shadow.gradle.plugin', version: '6.1.0', ext: 'pom'
 //        classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:5.2.0'
     }
 }
 
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+//    id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
 }
 
 
-apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
 group 'com.github.xfl12345'

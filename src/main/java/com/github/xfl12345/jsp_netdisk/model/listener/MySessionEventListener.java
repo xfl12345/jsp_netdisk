@@ -45,7 +45,7 @@ public class MySessionEventListener implements HttpSessionListener {
             accountService.logoutByAccountId(accountId);
             logger.info("accountId="+accountId+",session expire.Auto log out successfully.");
 //            FileService fileService = StaticSpringApp.getBean(FileService.class);
-            //删除所有下载链接
+            //删除这个用户所有下载链接（暂时先这么设计）
             FileService.downloadLinkMap.remove(accountId.toString());
         }
         sessionMap.remove(session.getId());

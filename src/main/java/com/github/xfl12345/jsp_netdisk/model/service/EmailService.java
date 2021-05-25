@@ -71,6 +71,7 @@ public class EmailService implements DisposableBean {
         InputStream inputStream = Resources.getResourceAsStream(email_prop_file_relative_path);
         Properties myEmailProperties = new Properties();
         myEmailProperties.load(inputStream);
+        inputStream.close();
         myEmailAddress = myPropertiesUtils.popKeyFromProperties(myEmailProperties, "myEmailAddress");
         myEmailAccount = myPropertiesUtils.popKeyFromProperties(myEmailProperties, "myEmailAccount");
         myEmailPassword = myPropertiesUtils.popKeyFromProperties(myEmailProperties, "myEmailPassword");

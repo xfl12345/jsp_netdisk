@@ -83,12 +83,13 @@ public interface DirFileDao {
     int insertBatch(@Param("entities") List<DirFile> entities);
 
     /**
-     * 批量新增或按主键更新数据（MyBatis原生foreach方法）
+     * 更新
      *
-     * @param entities List<DirFile> 实例对象列表
+     * @param src DirFile 旧的实例对象列表
+     * @param dest DirFile 新的实例对象列表
      * @return 影响行数
      */
-    int insertOrUpdateBatch(@Param("entities") List<DirFile> entities);
+    int update(@Param("src") DirFile src, @Param("dest") DirFile dest);
 
     /**
      * 通过实体作为筛选条件删除
