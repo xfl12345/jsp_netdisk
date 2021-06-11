@@ -67,12 +67,14 @@
     <select id="queryByUsername" resultMap="TbAccountMap">
         select *
         from jsp_netdisk.tb_account
+                 force index (boost_query_all)
         where username = binary #{username}
     </select>
 
     <select id="queryByEmail" resultMap="TbAccountMap">
         select *
         from jsp_netdisk.tb_account
+                 force index (boost_query_all)
         where email = binary #{email}
     </select>
 
@@ -101,6 +103,7 @@
                gender,
                account_status
         from jsp_netdisk.tb_account
+                 force index (boost_query_all)
         where email = binary #{email}
     </select>
 
@@ -111,6 +114,7 @@
                password_salt,
                account_status
         from jsp_netdisk.tb_account
+                 force index (boost_query_all)
         where username = #{username}
     </select>
 
@@ -160,6 +164,7 @@
     <select id="queryAll" resultMap="TbAccountMap">
         select *
         from jsp_netdisk.tb_account
+            force index(boost_query_all)
         <where>
             <if test="accountId != null">
                 and account_id = #{accountId}
@@ -205,13 +210,14 @@
                 #{rootDirectoryId}, #{email}, #{gender}, #{accountStatus})
     </insert>
 
-    <insert id="insertBatch" keyProperty="accountId" useGeneratedKeys="true" >
+    <insert id="insertBatch" keyProperty="accountId" useGeneratedKeys="true">
         insert into jsp_netdisk.tb_account(username, password_hash, password_salt, permission_id, register_time,
         register_time_in_ms, root_directory_id, email, gender, account_status)
         values
-        <foreach collection="entities" item="entity"  separator="," >
+        <foreach collection="entities" item="entity" separator=",">
             (#{entity.username}, #{entity.passwordHash}, #{entity.passwordSalt}, #{entity.permissionId},
-            #{entity.registerTime}, #{entity.registerTimeInMs}, #{entity.rootDirectoryId}, #{entity.email}, #{entity.gender},
+            #{entity.registerTime}, #{entity.registerTimeInMs}, #{entity.rootDirectoryId}, #{entity.email},
+            #{entity.gender},
             #{entity.accountStatus})
         </foreach>
     </insert>

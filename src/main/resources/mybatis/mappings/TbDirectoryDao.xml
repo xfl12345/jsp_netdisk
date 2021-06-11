@@ -13,6 +13,7 @@
     <select id="countAll" resultType="java.lang.Long">
         select count(1) as c
         from jsp_netdisk.tb_directory
+        force index(boost_query_all)
         <where>
             <if test="directoryId != null">
                 and directory_id = #{directoryId}
@@ -36,6 +37,7 @@
     <select id="queryAll" resultMap="TbDirectoryMap">
         select *
         from jsp_netdisk.tb_directory
+        force index(boost_query_all)
         <where>
             <if test="directoryId != null">
                 and directory_id = #{directoryId}

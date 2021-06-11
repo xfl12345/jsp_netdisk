@@ -48,8 +48,11 @@ create table tb_account
     `email`               char(255) comment '账号绑定的电子邮箱',
     `gender`              char(1)   not null comment '用户性别',
     `account_status`      int       not null comment '账号状态代码',
-    unique key index_username (username(32)),
-    unique key index_email (email(255))
+    unique key index_username (username),
+    unique key index_email (email),
+    unique key boost_query_all(username, password_hash, password_salt,
+                               permission_id, register_time, register_time_in_ms,
+                               root_directory_id, email, gender, account_status )
 ) AUTO_INCREMENT = 10000
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -68,9 +71,8 @@ create table tb_directory
     directory_name      char(255) not null comment '目录名称',
     foreign key (parent_directory_id) references tb_directory (directory_id) on delete cascade on update cascade,
     foreign key (account_id) references tb_account (account_id) on delete cascade on update cascade,
-    unique key unique_dir (parent_directory_id, directory_name),
-    index index_account_id (account_id),
-    index index_directory_name (directory_name(250))
+    unique unique_dir (parent_directory_id, directory_name),
+    unique boost_query_all (parent_directory_id, account_id, directory_name)
 ) AUTO_INCREMENT = 10000
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -89,7 +91,7 @@ create table tb_permission
     account_operation      int    not null comment '管理员权限的代码',
     account_info_operation int    not null default 0 comment '账号信息公开程度的代码',
     file_operation         int    not null comment '文件操作权限的代码',
-    unique least_waste (upload_file, download_file, account_operation, account_info_operation, file_operation)
+    unique key least_waste (upload_file, download_file, account_operation, account_info_operation, file_operation)
 ) AUTO_INCREMENT = 10000
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -118,11 +120,8 @@ create table tb_file
     file_upload_time DATETIME  not null comment '文件上传时间',
     file_hash_md5    char(32) comment '文件MD5哈希值',
     file_hash_sha256 char(64) comment '文件SHA256哈希值',
-    index index_file_name (file_name(250)),
-    index index_file_status (file_status),
-    index index_file_hash_md5 (file_hash_md5(32)),
-    index index_file_hash_sha256 (file_hash_sha256(64)),
-    unique key index_unique_file (file_size, file_hash_md5(32), file_hash_sha256(64))
+    unique key index_unique_file (file_size, file_hash_md5(32), file_hash_sha256(64)),
+    unique key boost_query_all (file_name, file_size, file_type, file_status, file_upload_time, file_hash_md5, file_hash_sha256)
 ) AUTO_INCREMENT = 10000
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -139,8 +138,7 @@ create table tb_account_group_info
     group_member_id bigint not null comment '被管理员管理的账号ID',
     foreign key (group_admin_id) references tb_account (account_id) on delete cascade on update cascade,
     foreign key (group_member_id) references tb_account (account_id) on delete cascade on update cascade,
-    index index_group_admin_id (group_admin_id),
-    index index_group_member_id (group_member_id)
+    unique key boost_query_all (group_admin_id, group_member_id)
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -176,10 +174,7 @@ create table dir_file
     foreign key (file_id) references tb_file (file_id) on delete cascade on update cascade,
     foreign key (directory_id) references tb_directory (directory_id) on delete cascade on update cascade,
     foreign key (account_id) references tb_account (account_id) on delete cascade on update cascade,
-    index index_account_id (account_id),
-    index index_file_id (file_id),
-    index index_directory_id (directory_id),
-    index index_user_custom_file_name (user_custom_file_name(255))
+    unique key boost_query_all (account_id, file_id, directory_id, user_custom_file_name)
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -211,7 +206,7 @@ create table email_verification
 (
     `email`            char(255)      not null comment '账号绑定的电子邮箱',
     `verification_log` varchar(16128) not null comment '发送过的验证码都以JSON文本形式记录下来',
-    unique key index_email (email(255))
+    unique key index_email (email)
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
